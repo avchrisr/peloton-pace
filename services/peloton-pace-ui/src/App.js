@@ -5,6 +5,7 @@ import PelotonApp from './components/PelotonApp';
 import { RootContext } from './RootContext';
 import SignIn from "./components/SignIn";
 import SignUp from './components/SignUp';
+import useLocalStorageState from './hooks/useLocalStorageState';
 
 const App = (props) => {
 
@@ -16,22 +17,27 @@ const App = (props) => {
     const prevAuth = window.localStorage.getItem('authenticated') || 'false';
     const prevAuthBody = window.localStorage.getItem('authBody') || '';
     const prevUserId = window.localStorage.getItem('userId') || '';
-    const [authenticated, setAuthenticated] = useState(prevAuth);
-    const [authBody, setAuthBody] = useState(prevAuthBody);
-    const [userId, setUserId] = useState(prevUserId);
 
-    useEffect(() => {
-        window.localStorage.setItem('authenticated', authenticated);
-    }, [authenticated]);
+    // const [authenticated, setAuthenticated] = useState(prevAuth);
+    // const [authBody, setAuthBody] = useState(prevAuthBody);
+    // const [userId, setUserId] = useState(prevUserId);
 
-    useEffect(() => {
-        window.localStorage.setItem('authBody', authBody);
-    }, [authBody]);
+    const [authenticated, setAuthenticated] = useLocalStorageState('authenticated', 'false');
+    const [authBody, setAuthBody] = useLocalStorageState('authBody', '');
+    const [userId, setUserId] = useLocalStorageState('userId', '');
 
-    useEffect(() => {
-        console.log(`------   useEffect  --  setting userId = ${userId}`);
-        window.localStorage.setItem('userId', userId);
-    }, [userId]);
+    // useEffect(() => {
+    //     window.localStorage.setItem('authenticated', authenticated);
+    // }, [authenticated]);
+    //
+    // useEffect(() => {
+    //     window.localStorage.setItem('authBody', authBody);
+    // }, [authBody]);
+    //
+    // useEffect(() => {
+    //     console.log(`------   useEffect  --  setting userId = ${userId}`);
+    //     window.localStorage.setItem('userId', userId);
+    // }, [userId]);
 
 
     const setMyAuthenticated = (value) => {
@@ -62,7 +68,7 @@ const App = (props) => {
             </div>}
             {userId === '' && (window.location.pathname === '/signup' ? <SignUp /> :
                 <SignIn
-                    setAuthenticated={setMyAuthenticated}
+                    setAuthenticated={setAuthenticated}
                     setAuthBody={setAuthBody}
                     setUserId={setUserId}
                 />)}
