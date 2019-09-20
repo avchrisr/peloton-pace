@@ -1,8 +1,8 @@
 import React, { useContext, useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { AppBar, Button, Checkbox, CircularProgress, FormControl, FormControlLabel, FormLabel, IconButton, InputLabel, LinearProgress,
-        MenuItem, Paper, Radio, RadioGroup, Select, SnackbarContent, Table, TableBody, TableCell, TableHead,
-        TableRow, TableFooter, TablePagination, TextField, Toolbar, Typography } from '@material-ui/core';
+    MenuItem, Paper, Radio, RadioGroup, Select, SnackbarContent, Table, TableBody, TableCell, TableHead,
+    TableRow, TableFooter, TablePagination, TextField, Toolbar, Typography } from '@material-ui/core';
 
 import MenuIcon from '@material-ui/icons/Menu';
 
@@ -302,46 +302,46 @@ export default function TemplateSearch() {
                         </RadioGroup>
                     </FormControl>
                     <TextField
-                           label="Username"
-                           helperText="Not applicable for System Templates"
-                           value={username}
-                           name="username"
-                           onChange={handleInputValueChange}
-                           margin="normal"
-                           disabled={isUsernameFieldDisabled}
+                        label="Username"
+                        helperText="Not applicable for System Templates"
+                        value={username}
+                        name="username"
+                        onChange={handleInputValueChange}
+                        margin="normal"
+                        disabled={isUsernameFieldDisabled}
                     />
                 </div>
                 <div>
                     <TextField style={{marginTop: 0}}
-                           label="Title"
-                           value={title}
-                           name="title"
-                           onChange={handleInputValueChange}
-                           margin="normal"
+                               label="Title"
+                               value={title}
+                               name="title"
+                               onChange={handleInputValueChange}
+                               margin="normal"
                     />
                     <FormControlLabel style={{display: 'block'}}
-                          control={
-                              <Checkbox
-                                  color="primary"
-                                  checked={isPartialTitleMatch}
-                                  name="isPartialTitleMatch"
-                                  onChange={handleInputValueChange} />
-                          }
-                          label="Find Partial Title Matches"
+                                      control={
+                                          <Checkbox
+                                              color="primary"
+                                              checked={isPartialTitleMatch}
+                                              name="isPartialTitleMatch"
+                                              onChange={handleInputValueChange} />
+                                      }
+                                      label="Find Partial Title Matches"
                     />
                     <TextField style={{display: 'block'}}
-                           label="Author"
-                           value={author}
-                           name="author"
-                           onChange={handleInputValueChange}
-                           margin="normal"
+                               label="Author"
+                               value={author}
+                               name="author"
+                               onChange={handleInputValueChange}
+                               margin="normal"
                     />
                     <TextField style={{display: 'block'}}
-                           label="Version"
-                           value={version}
-                           name="version"
-                           onChange={handleInputValueChange}
-                           margin="normal"
+                               label="Version"
+                               value={version}
+                               name="version"
+                               onChange={handleInputValueChange}
+                               margin="normal"
                     />
                 </div>
                 <div/>

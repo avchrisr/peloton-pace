@@ -17,9 +17,14 @@ import SnackbarContent from '@material-ui/core/SnackbarContent';
 
 import _ from 'lodash';
 import axios from 'axios';
-import {RootContext} from "../RootContext";
+import { RootContext } from "../RootContext";
 
 import { navigate } from 'hookrouter';
+
+const REACT_APP_STATIC_SITE_DEMO_MODE = process.env.REACT_APP_STATIC_SITE_DEMO_MODE || 'false';
+const REACT_APP_NGINX_HOSTNAME = process.env.REACT_APP_NGINX_HOSTNAME || 'localhost';
+const REACT_APP_NGINX_PORT = process.env.REACT_APP_NGINX_PORT || '9090';        // 3001
+const REACT_APP_API_VERSION = process.env.REACT_APP_API_VERSION || 'v1';
 
 const useStyles = makeStyles(theme => ({
     '@global': {
@@ -46,8 +51,9 @@ const useStyles = makeStyles(theme => ({
         margin: theme.spacing(3, 0, 2),
     },
     errorDisplay: {
-        marginTop: '1.5rem'
-    }
+        marginTop: '1.5rem',
+        backgroundColor: '#e74c3c',
+    },
 }));
 
 function Copyright() {
@@ -63,14 +69,21 @@ function Copyright() {
     );
 }
 
-export default function SignIn() {
+const SignIn = (props) => {
+
+    console.log('-------------   SignIn props   ------------');
+    console.log(props);
+
     const classes = useStyles();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [errorMessages, setErrorMessages] = useState([]);
+    const [signInErrorMessages, setSignInErrorMessages] = useState([]);
 
-    const { authenticated, setAuthenticated, authBody, setAuthBody } = useContext(RootContext);
+    // const { authenticated, setAuthenticated, authBody, setAuthBody, userId, setUserId } = useContext(RootContext);
+
+    // console.log(`authenticated signIn = ${authenticated}`);
+    // console.log(`authBody signIn = ${authBody}`);
 
     const handleInputValueChange = (event) => {
         switch (event.target.name) {
@@ -91,36 +104,22 @@ export default function SignIn() {
 
         console.log(`sign in button clicked. email = ${email} | password = ${password}`);
 
-        const errorMessages = [];
+        const signInErrorMsgs = [];
 
         if (_.isEmpty(email) || _.isEmpty(password)) {
-            const errorMessage = 'email or password is blank.';
+            const errorMessage = 'Email and password are required in order to sign in';
             console.log(errorMessage);
 
-            errorMessages.push(errorMessage);
-
-            setErrorMessages(errorMessages);
+            signInErrorMsgs.push(errorMessage);
+            setSignInErrorMessages(signInErrorMsgs);
             return;
         }
 
-
-        setAuthenticated('true');
-        navigate('/');
-
-/*
-        // const url = `http://${REACT_APP_NGINX_HOSTNAME}:${REACT_APP_NGINX_PORT}/api/v1/templates/copy-templates`;
-        const url = `http://api/v1/templates/copy-templates`;
+        const url = `http://${REACT_APP_NGINX_HOSTNAME}:${REACT_APP_NGINX_PORT}/api/${REACT_APP_API_VERSION}/auth/login`;
 
         const requestBody = {
-            // fromEnvironment: fromEnv,
-            // toEnvironment: toEnv,
-            // fromType,
-            // toType,
-            // fromUsername,
-            // toUsername,
-            // templateIdsArray,
-            // createNewSystemTemplate: createOrReplaceSystemTemplate === 'create',
-            // systemTemplateIdToReplace: systemTemplateIdToReplace
+            username: email,
+            password
         };
 
         const options = {
@@ -146,20 +145,53 @@ export default function SignIn() {
             console.log(`-------------  ERROR RESPONSE  ---------------`);
             console.log(err.response);
 
-            // const errorMessage = _.get(err, 'response.data.message') || _.get(err, 'message');
+            let errorMessage = _.get(err, 'response.data.message') || _.get(err, 'message');
+            if (errorMessage.includes('Bad credentials')) {
+                errorMessage = 'Invalid user credential';
+            }
 
-            // setErrorMessages([errorMessage]);
+            // TODO: implement static site demo mode
+            if (REACT_APP_STATIC_SITE_DEMO_MODE === 'true') {
+                props.setAuthenticated('true');
+                navigate('/');
+            } else {
+
+                console.log('--------   Sign In Error Message   ----------');
+                console.log(errorMessage);
+
+
+                setSignInErrorMessages([errorMessage]);
+            }
         });
 
         if (res) {
             console.log(`-------------  res.data  ---------------`);
             console.log(JSON.stringify(res.data, null, 4));
+            /*
+            {
+                "jwt": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnYmVhckBlbWFpbC5jb20iLCJpYXQiOjE1Njg0OTQ0MDcsImV4cCI6MTU2OTA5OTIwN30.GdTamSSsmrLNt8Qggv-bk1iVk_Jglqwua3WnWMu2kZ7iCGuqrZP0qRCb2YDS1-50jHvxaLg3MOVoCyWRd_VGVQ"
+            }
+            */
 
-            // setSubmitResponseMessage(res.data);
+            const base64Url = res.data.jwt.split('.')[0]; // 0: header  1: payload
+            const base64 = base64Url.replace('-', '+').replace('_', '/');
+            const jwtHeader = JSON.parse(Buffer.from(base64, 'base64').toString('UTF-8'));
+
+            console.log(`-------------  jwtHeader  ---------------`);
+            console.log(jwtHeader);
+
+            // res.data.userId = jwtHeader.userId;
+
+            // props.setUserId(`${jwtHeader.userId}`);
+            props.setUserId(jwtHeader.userId + '');
+
+
+            // TODO: store JWT in local storage, and implement Refresh Token workflow
+
+            props.setAuthenticated('true');
+            props.setAuthBody(JSON.stringify(res.data));
+            navigate('/');
         }
- */
-
-
     };
 
     return (
@@ -173,7 +205,7 @@ export default function SignIn() {
                 <Typography component="h1" variant="h5">
                     Sign in
                 </Typography>
-                <form className={classes.form} noValidate>
+                <form className={classes.form}>
                     <TextField
                         variant="outlined"
                         margin="normal"
@@ -200,10 +232,10 @@ export default function SignIn() {
                         value={password}
                         onChange={handleInputValueChange}
                     />
-                    <FormControlLabel
+                    {/* <FormControlLabel
                         control={<Checkbox value="remember" color="primary" />}
                         label="Remember me"
-                    />
+                    /> */}
                     <Button
                         type="submit"
                         fullWidth
@@ -233,8 +265,8 @@ export default function SignIn() {
             </Box>
 
             <div className={classes.errorDisplay}>
-                {errorMessages.map((errorMessage, index) => (<SnackbarContent
-                    className={classes.snackbar}
+                {signInErrorMessages.map((errorMessage, index) => (<SnackbarContent
+                    className={classes.errorDisplay}
                     message={errorMessage}
                     key={index}
                 />))}
@@ -242,4 +274,6 @@ export default function SignIn() {
 
         </Container>
     );
-}
+};
+
+export default SignIn;

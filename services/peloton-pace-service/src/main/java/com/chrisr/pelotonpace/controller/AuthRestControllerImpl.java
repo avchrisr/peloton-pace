@@ -61,7 +61,9 @@ public class AuthRestControllerImpl implements AuthRestController {
 		// we’ll now be able to check if the current user is authenticated – using securityContext.getAuthentication().isAuthenticated()
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
-		String jwt = jwtTokenProvider.generateToken(authentication);
+		// look up user and include userId in the JWT header
+		User user = userService.getUserByUsername(loginRequest.getUsername());
+		String jwt = jwtTokenProvider.generateToken(authentication, user.getId());
 		return ResponseEntity.ok().body(new JwtAuthResponse(jwt));
 	}
 }

@@ -56,6 +56,11 @@ public class UserService {
         return userRepository.getUserById(id);
     }
 
+    @Transactional(readOnly = true)
+    public User getUserByUsername(String username) {
+        return userRepository.getUserByUsername(username);
+    }
+
     @Transactional
     public void addUser(User user) {
         user.setId(userRepository.getNextSequence());

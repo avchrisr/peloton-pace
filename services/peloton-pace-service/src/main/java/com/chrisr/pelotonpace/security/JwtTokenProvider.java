@@ -8,7 +8,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.spec.SecretKeySpec;
+import javax.xml.bind.DatatypeConverter;
+import java.security.Key;
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 public class JwtTokenProvider {
@@ -19,21 +23,26 @@ public class JwtTokenProvider {
 	private String jwtSecret;
 
 	@Value("${app.jwtExpirationInMilliseconds}")
-	private int jwtExpirationInMilliseconds;
+	private long jwtExpirationInMilliseconds;
 
 
-	public String generateToken(Authentication authentication) {
-
+	public String generateToken(Authentication authentication, long userId) {
 		User user = (User) authentication.getPrincipal();
 
 		Date now = new Date();
 		Date expirationDate = new Date(now.getTime() + jwtExpirationInMilliseconds);
 
+		SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS512;
+		byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(jwtSecret);
+		Key signingKey = new SecretKeySpec(apiKeySecretBytes, signatureAlgorithm.getJcaName());
+
 		return Jwts.builder()
+				.setHeaderParam("userId", userId)
+				.setId(UUID.randomUUID().toString())
 				.setSubject(user.getUsername())
 				.setIssuedAt(now)
 				.setExpiration(expirationDate)
-				.signWith(SignatureAlgorithm.HS512, jwtSecret)
+				.signWith(signatureAlgorithm, signingKey)
 				.compact();
 	}
 
