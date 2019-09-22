@@ -8,8 +8,6 @@ import {
 
 import { navigate } from 'hookrouter';
 
-import { RootContext } from "../RootContext";
-
 const REACT_APP_NGINX_HOSTNAME = process.env.REACT_APP_NGINX_HOSTNAME || 'localhost';
 const REACT_APP_NGINX_PORT = process.env.REACT_APP_NGINX_PORT || '3001';
 const REACT_APP_API_VERSION = process.env.REACT_APP_API_VERSION || 'v1';
@@ -32,10 +30,14 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-export default function PelotonWorkouts() {
+const PelotonWorkouts = () => {
     const classes = useStyles();
 
-    // const { authenticated, setAuthenticated, authBody, setAuthBody, pelotonWorkoutListData, setPelotonWorkoutListData } = useContext(RootContext);
+
+    // TODO: retrieve the workout list. most recent 10, then "more workouts" button fetches more
+
+
+
 
 
     const handleClick = (props) => {
@@ -107,3 +109,5 @@ export default function PelotonWorkouts() {
         </div>
     );
 };
+
+export default PelotonWorkouts;

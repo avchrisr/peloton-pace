@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, {useCallback, useContext, useState} from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -17,9 +17,9 @@ import SnackbarContent from '@material-ui/core/SnackbarContent';
 
 import _ from 'lodash';
 import axios from 'axios';
-import { RootContext } from "../RootContext";
 
 import { navigate } from 'hookrouter';
+import { AuthContext, ReducerActionTypes } from "../App";
 
 const REACT_APP_STATIC_SITE_DEMO_MODE = process.env.REACT_APP_STATIC_SITE_DEMO_MODE || 'false';
 const REACT_APP_NGINX_HOSTNAME = process.env.REACT_APP_NGINX_HOSTNAME || 'localhost';
@@ -76,50 +76,54 @@ const SignIn = (props) => {
 
     const classes = useStyles();
 
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [signInErrorMessages, setSignInErrorMessages] = useState([]);
+    const { dispatch } = useContext(AuthContext);
 
-    // const { authenticated, setAuthenticated, authBody, setAuthBody, userId, setUserId } = useContext(RootContext);
+    const initialState = {
+        email: '',
+        password: '',
+        isSubmitting: false,
+        errorMessages: []
+    };
 
-    // console.log(`authenticated signIn = ${authenticated}`);
-    // console.log(`authBody signIn = ${authBody}`);
+    const [data, setData] = useState(initialState);
 
     const handleInputValueChange = (event) => {
-        switch (event.target.name) {
-            case 'email':
-                setEmail(event.target.value);
-                break;
-            case 'password':
-                setPassword(event.target.value);
-                break;
-            default:
-                console.log(`Error - Unrecognized event.target.name = ${event.target.name}`);
-                break;
-        }
+        setData({
+            ...data,
+            [event.target.name]: event.target.value
+        });
     };
 
     const handleSignIn = async (event) => {
         event.preventDefault();
 
-        console.log(`sign in button clicked. email = ${email} | password = ${password}`);
+        console.log(`sign in button clicked. email = ${data.email} | password = ${data.password}`);
 
-        const signInErrorMsgs = [];
+        const errorMessages = [];
 
-        if (_.isEmpty(email) || _.isEmpty(password)) {
+        if (_.isEmpty(data.email) || _.isEmpty(data.password)) {
             const errorMessage = 'Email and password are required in order to sign in';
             console.log(errorMessage);
 
-            signInErrorMsgs.push(errorMessage);
-            setSignInErrorMessages(signInErrorMsgs);
+            errorMessages.push(errorMessage);
+            setData({
+                ...data,
+                errorMessages
+            });
             return;
         }
+
+        setData({
+            ...data,
+            isSubmitting: true,
+            errorMessages: []
+        });
 
         const url = `http://${REACT_APP_NGINX_HOSTNAME}:${REACT_APP_NGINX_PORT}/api/${REACT_APP_API_VERSION}/auth/login`;
 
         const requestBody = {
-            username: email,
-            password
+            username: data.email,
+            password: data.password
         };
 
         const options = {
@@ -152,21 +156,28 @@ const SignIn = (props) => {
 
             // TODO: implement static site demo mode
             if (REACT_APP_STATIC_SITE_DEMO_MODE === 'true') {
-                props.setAuthenticated('true');
-                navigate('/');
+
+                console.log('-------  sign in error 1  ---------');
+                // props.setAuthenticated('true');
+                // navigate('/');
             } else {
 
                 console.log('--------   Sign In Error Message   ----------');
                 console.log(errorMessage);
 
 
-                setSignInErrorMessages([errorMessage]);
+                setData({
+                    ...data,
+                    isSubmitting: false,
+                    errorMessages: [errorMessage]
+                });
             }
         });
 
         if (res) {
             console.log(`-------------  res.data  ---------------`);
             console.log(JSON.stringify(res.data, null, 4));
+
             /*
             {
                 "jwt": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnYmVhckBlbWFpbC5jb20iLCJpYXQiOjE1Njg0OTQ0MDcsImV4cCI6MTU2OTA5OTIwN30.GdTamSSsmrLNt8Qggv-bk1iVk_Jglqwua3WnWMu2kZ7iCGuqrZP0qRCb2YDS1-50jHvxaLg3MOVoCyWRd_VGVQ"
@@ -180,16 +191,28 @@ const SignIn = (props) => {
             console.log(`-------------  jwtHeader  ---------------`);
             console.log(jwtHeader);
 
-            // res.data.userId = jwtHeader.userId;
+            res.data.userId = jwtHeader.userId;
+            res.data.userFirstname = jwtHeader.userFirstname;
 
-            // props.setUserId(`${jwtHeader.userId}`);
-            props.setUserId(jwtHeader.userId + '');
+            dispatch({
+                type: ReducerActionTypes.LOGIN,
+                payload: res.data
+            });
 
 
-            // TODO: store JWT in local storage, and implement Refresh Token workflow
 
-            props.setAuthenticated('true');
-            props.setAuthBody(JSON.stringify(res.data));
+
+            // // props.setUserId(`${jwtHeader.userId}`);
+            // props.setUserId(jwtHeader.userId + '');
+            //
+            //
+            // // TODO: store JWT in local storage, and implement Refresh Token workflow
+            //
+            // props.setAuthenticated('true');
+            // props.setAuthBody(JSON.stringify(res.data));
+
+
+
             navigate('/');
         }
     };
@@ -216,8 +239,9 @@ const SignIn = (props) => {
                         name="email"
                         autoComplete="email"
                         autoFocus
-                        value={email}
+                        value={data.email}
                         onChange={handleInputValueChange}
+                        // onChange={(event) => setEmail(event.target.value)}
                     />
                     <TextField
                         variant="outlined"
@@ -229,8 +253,9 @@ const SignIn = (props) => {
                         type="password"
                         id="password"
                         autoComplete="current-password"
-                        value={password}
+                        value={data.password}
                         onChange={handleInputValueChange}
+                        // onChange={(event) => setPassword(event.target.value)}
                     />
                     {/* <FormControlLabel
                         control={<Checkbox value="remember" color="primary" />}
@@ -242,9 +267,10 @@ const SignIn = (props) => {
                         variant="contained"
                         color="primary"
                         className={classes.submit}
+                        disabled={data.isSubmitting}
                         onClick={handleSignIn}
                     >
-                        Sign In
+                        {data.isSubmitting ? 'Loading...' : 'Sign In'}
                     </Button>
                     <Grid container>
                         <Grid item xs>
@@ -253,7 +279,7 @@ const SignIn = (props) => {
                             </Link>
                         </Grid>
                         <Grid item>
-                            <Link href="/signup" variant="body2">
+                            <Link href="/sign-up" variant="body2">
                                 {"Don't have an account? Sign Up"}
                             </Link>
                         </Grid>
@@ -265,7 +291,7 @@ const SignIn = (props) => {
             </Box>
 
             <div className={classes.errorDisplay}>
-                {signInErrorMessages.map((errorMessage, index) => (<SnackbarContent
+                {data.errorMessages.map((errorMessage, index) => (<SnackbarContent
                     className={classes.errorDisplay}
                     message={errorMessage}
                     key={index}

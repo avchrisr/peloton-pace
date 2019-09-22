@@ -9,8 +9,7 @@ import {
 import { deepOrange, deepPurple } from '@material-ui/core/colors';
 
 import { navigate } from 'hookrouter';
-
-import { RootContext } from "../RootContext";
+import _ from "lodash";
 
 const REACT_APP_NGINX_HOSTNAME = process.env.REACT_APP_NGINX_HOSTNAME || 'localhost';
 const REACT_APP_NGINX_PORT = process.env.REACT_APP_NGINX_PORT || '3001';
@@ -75,33 +74,70 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-export default function PelotonWorkoutList(props) {
-
-    console.log(`------   workout lists  props   ------`);
-    console.log(props);
-
+const PelotonWorkoutList = (props) => {
     const classes = useStyles();
 
+    console.log(`------   PelotonWorkoutList  props   ------`);
+    console.log(props);
 
-    // const { authenticated, setAuthenticated, authBody, setAuthBody, pelotonWorkoutListData, setPelotonWorkoutListData } = useContext(RootContext);
+
+
+    // TODO: in order to display the metrics on the list page, I need to retrieve the metrics here.... for every workout listed....
+    //  maybe i should only display them in the detail page... not on the list page... ?
 
 
 
-    const handleClick = (props) => {
 
-        console.log(`-----   workoutlist props click   -----`);
-        console.log(props);
 
-        navigate(`/peloton-workout-detail/${props.id}`);
+
+
+
+
+
+
+
+    // TODO: retrieve the initial data workout list summary from localStorage (which is fetched in PelotonMain.js), then "more workouts" button to fetch more
+    //  or just fetch brand new? to avoid any dependency? I don't think it'd hurt actually
+
+    const pelotonWorkoutOverviewData = JSON.parse(window.localStorage.getItem('pelotonWorkoutOverviewData'));
+
+    console.log(`------   PelotonWorkoutList  pelotonWorkoutOverviewData   ------`);
+    console.log(pelotonWorkoutOverviewData);
+
+
+    const handleClick = (clickProps) => {
+
+        console.log(`-----   workoutlist props CLICK   -----`);
+        console.log(clickProps);
+
+
+        // const workoutSummary = _.find(pelotonWorkoutOverviewData.data, (workout) => workout.id === clickProps.workoutId);
+
+        // console.log('----------------   WorkoutList  summary   -----------------');
+        // console.log(workoutSummary);
+
+
+        // TODO: fetch the details data here, and store it in localStorage, then navigate to the details page
+
+        const workoutDetail = {
+            id: clickProps.workout.id,
+            start_time: clickProps.workout.start_time,
+            name: clickProps.workout.name,
+            status: clickProps.workout.status
+        };
+        window.localStorage.setItem(`workoutDetail_${clickProps.workout.id}`, JSON.stringify(workoutDetail));
+
+        navigate(`/peloton-workout-detail/${clickProps.workout.id}`);
     };
 
     return (
         <div className={classes.root}>
             <div style={{fontSize: '1.5rem', backgroundColor: 'whitesmoke', padding: '0.8rem 1rem'}}>2019 - September</div>
             <List>
-                {props.pelotonWorkoutListData.data.map((workout) => {
+                {pelotonWorkoutOverviewData.data.map((workout) => {
 
                     const workoutId = workout.id;
+                    const rideId = workout.ride.id;
                     const instructorName = workout.ride.instructor.name;
                     const explicitClass = workout.ride.is_explicit ? '(explicit)' : '';
                     const workoutStartDate = new Date(workout.start_time * 1000);
@@ -125,7 +161,7 @@ export default function PelotonWorkoutList(props) {
                                                       variant="h6"
                                                       className={classes.listItem}
                                                       color="textPrimary"
-                                                      onClick={() => handleClick({id: workoutId})}
+                                                      onClick={() => handleClick({workout})}
                                                   >
                                                       {`${instructorName} - ${workout.ride.title} ${explicitClass}`}
                                                       {/* Emma Lovewell - 30 min Trap Music Ride */}
@@ -189,132 +225,13 @@ export default function PelotonWorkoutList(props) {
                     </span>
                     );
                 })}
-
-
-
-
-                <ListItem alignItems="flex-start">
-                    <ListItemAvatar style={{margin: '1rem'}}>
-                    <span>
-                        <Avatar className={classes.bigAvatar} alt="Olivia Amato" src="https://workout-metric-images-prod.s3.amazonaws.com/d6278b76c3e34c68b4b009d621070daf" />
-                        <div style={{fontSize: '1.5rem', margin: '0.5rem auto'}}>408 kcal</div>
-                        <div>(15 kcal / min)</div>
-                    </span>
-                    </ListItemAvatar>
-                    <ListItemText style={{margin: '1rem'}}
-                                  secondary={
-                                      <React.Fragment>
-                                          <Typography
-                                              component="span"
-                                              variant="h6"
-                                              className={classes.listItem}
-                                              color="textPrimary"
-                                              onClick={handleClick}
-                                          >
-                                              Emma Lovewell - 30 min Trap Music Ride
-                                          </Typography>
-                                          <Typography
-                                              component="span"
-                                              variant="body1"
-                                              className={classes.listItem}
-                                              color="textPrimary"
-                                          >
-                                              Wednesday, July 24, 2019 @ 6:40 PM
-                                          </Typography>
-                                          <span style={{display: 'flex', margin: '1rem 0 auto', justifyContent: 'space-around'}}>
-                                <span style={{textAlign: 'center'}}>
-                                    <Avatar component="span" className={classes.purpleAvatar}>30</Avatar>
-                                    <span>Duration</span>
-                                </span>
-                                <span style={{textAlign: 'center'}}>
-                                    <Avatar component="span" className={classes.purpleAvatar}>408</Avatar>
-                                    <span>Calories</span>
-                                </span>
-                                <span style={{textAlign: 'center'}}>
-                                    <Avatar component="span" className={classes.purpleAvatar}>145</Avatar>
-                                    <span>Avg. Heart Rate</span>
-                                </span>
-                                <span style={{textAlign: 'center'}}>
-                                    <Avatar component="span" className={classes.purpleAvatar}>155</Avatar>
-                                    <span>Max Heart Rate</span>
-                                </span>
-                                <span style={{textAlign: 'center'}}>
-                                    <Avatar component="span" className={classes.purpleAvatar}>70</Avatar>
-                                    <span>Avg. Cadence</span>
-                                </span>
-                                <span style={{textAlign: 'center'}}>
-                                    <Avatar component="span" className={classes.purpleAvatar}>100</Avatar>
-                                    <span>Max Cadence</span>
-                                </span>
-                            </span>
-                                      </React.Fragment>
-                                  }
-                    />
-                </ListItem>
-                <Divider variant="middle" component="li" />
-                <ListItem alignItems="flex-start">
-                    <ListItemAvatar style={{margin: '1rem'}}>
-                    <span>
-                        <Avatar className={classes.bigAvatar} alt="Olivia Amato" src="https://workout-metric-images-prod.s3.amazonaws.com/d6278b76c3e34c68b4b009d621070daf" />
-                        <div style={{fontSize: '1.5rem', margin: '0.5rem auto'}}>408 kcal</div>
-                        <div>(15 kcal / min)</div>
-                    </span>
-                    </ListItemAvatar>
-                    <ListItemText style={{margin: '1rem'}}
-                                  secondary={
-                                      <React.Fragment>
-                                          <Typography
-                                              component="span"
-                                              variant="h6"
-                                              className={classes.listItem}
-                                              color="textPrimary"
-                                              onClick={handleClick}
-                                          >
-                                              Emma Lovewell - 30 min Trap Music Ride
-                                          </Typography>
-                                          <Typography
-                                              component="span"
-                                              variant="body1"
-                                              className={classes.listItem}
-                                              color="textPrimary"
-                                          >
-                                              Wednesday, July 24, 2019 @ 6:40 PM
-                                          </Typography>
-                                          <span style={{display: 'flex', margin: '1rem 0 auto', justifyContent: 'space-around'}}>
-                                <span style={{textAlign: 'center'}}>
-                                    <Avatar component="span" className={classes.purpleAvatar}>30</Avatar>
-                                    <span>Duration</span>
-                                </span>
-                                <span style={{textAlign: 'center'}}>
-                                    <Avatar component="span" className={classes.purpleAvatar}>408</Avatar>
-                                    <span>Calories</span>
-                                </span>
-                                <span style={{textAlign: 'center'}}>
-                                    <Avatar component="span" className={classes.purpleAvatar}>145</Avatar>
-                                    <span>Avg. Heart Rate</span>
-                                </span>
-                                <span style={{textAlign: 'center'}}>
-                                    <Avatar component="span" className={classes.purpleAvatar}>155</Avatar>
-                                    <span>Max Heart Rate</span>
-                                </span>
-                                <span style={{textAlign: 'center'}}>
-                                    <Avatar component="span" className={classes.purpleAvatar}>70</Avatar>
-                                    <span>Avg. Cadence</span>
-                                </span>
-                                <span style={{textAlign: 'center'}}>
-                                    <Avatar component="span" className={classes.purpleAvatar}>100</Avatar>
-                                    <span>Max Cadence</span>
-                                </span>
-                            </span>
-                                      </React.Fragment>
-                                  }
-                    />
-                </ListItem>
-                <Divider variant="middle" component="li" />
             </List>
         </div>
     );
 };
+
+export default PelotonWorkoutList;
+
 
 {/* <Grid container spacing={1}>
                 <Grid item xs={12}>

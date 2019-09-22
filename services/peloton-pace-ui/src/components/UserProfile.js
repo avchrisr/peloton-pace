@@ -8,8 +8,6 @@ import {
 import _ from 'lodash';
 import axios from 'axios';
 
-import { RootContext } from "../RootContext";
-
 const isOnlyNumbersRegEx = /^\d+$/;
 
 const REACT_APP_NGINX_HOSTNAME = process.env.REACT_APP_NGINX_HOSTNAME || 'localhost';
@@ -76,130 +74,124 @@ const UserProfile = (props) => {
     console.log(props);
 
 
-
-    // const { authenticated, setAuthenticated, authBody, setAuthBody, userId, setUserId } = useContext(RootContext);
-
-    const authBodyJson = JSON.parse(props.authBody);
-    console.log('----------   user profile top JWT   -------------');
-    console.log(authBodyJson.jwt);
-
-    const [email, setEmail] = useState(props.email);
-    const [password, setPassword] = useState(props.password);
-    const [firstname, setFirstname] = useState(props.firstname);
-    const [lastname, setLastname] = useState(props.lastname);
-    const [dob, setDob] = useState(props.dob);
-    const [pelotonUsername, setPelotonUsername] = useState(props.pelotonUsername);
-    const [pelotonPassword, setPelotonPassword] = useState(props.pelotonPassword);
+    const isAuthenticated = window.localStorage.getItem('isAuthenticated');
+    const userId = window.localStorage.getItem('userId');
+    const userFirstname = window.localStorage.getItem('userFirstname');
+    const jwt = window.localStorage.getItem('jwt');
 
 
-
-    // TODO: figure out why email is not getting set here.  or try passing the setter from higher level? (PelotonApp.js)?
-
-
-    console.log(`props.email = ${props.email}`);
-    console.log(`typeof props.email = ${typeof props.email}`);
-
-    console.log(`email = ${email}`);
+    console.log(`UserProfile isAuthenticated = ${isAuthenticated}`);
+    console.log(`UserProfile userId = ${userId}`);
+    console.log(`UserProfile userFirstname = ${userFirstname}`);
+    console.log(`UserProfile jwt = ${jwt}`);
 
 
-    const [emailOriginal, setEmailOriginal] = useState('');
-    const [passwordOriginal, setPasswordOriginal] = useState('');
-    const [firstnameOriginal, setFirstnameOriginal] = useState('');
-    const [lastnameOriginal, setLastnameOriginal] = useState('');
-    const [dobOriginal, setDobOriginal] = useState('');
-    const [pelotonUsernameOriginal, setPelotonUsernameOriginal] = useState('');
-    const [pelotonPasswordOriginal, setPelotonPasswordOriginal] = useState('');
+    const initialState = {
+        email: '',
+        password: '',
+        firstname: '',
+        lastname: '',
+        dob: '',
+        pelotonUsername: '',
+        pelotonPassword: '',
+        errorMessages: [],
+        isSubmitting: false,
+        responseMessage: ''
+    };
 
-    const [emailChanged, setEmailChanged] = useState(false);
-    const [passwordChanged, setPasswordChanged] = useState(false);
-    const [firstnameChanged, setFirstnameChanged] = useState(false);
-    const [lastnameChanged, setLastnameChanged] = useState(false);
-    const [dobChanged, setDobChanged] = useState(false);
-    const [pelotonUsernameChanged, setPelotonUsernameChanged] = useState(false);
-    const [pelotonPasswordChanged, setPelotonPasswordChanged] = useState(false);
+    const [initialStateData, setInitialStateData] = useState(initialState);
+    const [data, setData] = useState(initialState);
 
-    const [isLoading, setLoading] = useState(false);
-    const [errorMessages, setErrorMessages] = useState([]);
-    const [submitResponseMessage, setSubmitResponseMessage] = useState('');
+    const fetchUserInfo = async () => {
+        // call to retrieve the user info
+        const url = `http://${REACT_APP_NGINX_HOSTNAME}:${REACT_APP_NGINX_PORT}/api/${REACT_APP_API_VERSION}/users/${userId}`;
 
-    // const fetchUserInfo = async () => {
-    //     // call to retrieve the user info
-    //     const url = `http://${REACT_APP_NGINX_HOSTNAME}:${REACT_APP_NGINX_PORT}/api/${REACT_APP_API_VERSION}/users/${userId}`;
+        const options = {
+            url,
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + jwt
+            },
+            // data: requestBody,
+            timeout: 5000,
+            // auth: {
+            //     username: environment.username,
+            //     password: environment.password
+            // }
+        };
 
-    //     const options = {
-    //         url,
-    //         method: 'GET',
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //             'Authorization': 'Bearer ' + authBodyJson.jwt
-    //         },
-    //         // data: requestBody,
-    //         timeout: 5000,
-    //         // auth: {
-    //         //     username: environment.username,
-    //         //     password: environment.password
-    //         // }
-    //     };
+        console.log(`URL = ${url}`);
 
-    //     console.log(`URL = ${url}`);
-    //     console.log(`userId = ${userId}`);
+        const res = await axios(options).catch((err) => {
+            console.log(`-------------  AXIOS ERROR  ---------------`);
+            console.log(err);
+            console.log(JSON.stringify(err, null, 4));
+            console.log(`-------------  ERROR RESPONSE  ---------------`);
+            console.log(err.response);
 
+            const errorMessage = _.get(err, 'response.data.message') || _.get(err, 'message');
 
-    //     const res = await axios(options).catch((err) => {
-    //         console.log(`-------------  AXIOS ERROR  ---------------`);
-    //         console.log(err);
-    //         console.log(JSON.stringify(err, null, 4));
-    //         console.log(`-------------  ERROR RESPONSE  ---------------`);
-    //         console.log(err.response);
+            console.log('--------   User Profile Error Message   ----------');
+            console.log(errorMessage);
 
-    //         const errorMessage = _.get(err, 'response.data.message') || _.get(err, 'message');
+            setData({
+                ...data,
+                errorMessages: [errorMessage]
+            });
+        });
 
-    //         console.log('--------   User Profile Error Message   ----------');
-    //         console.log(errorMessage);
-
-    //         setErrorMessages([errorMessage]);
-    //     });
-
-    //     if (res) {
-    //         console.log(`-------------  res.data  ---------------`);
-    //         console.log(JSON.stringify(res.data, null, 4));
+        if (res) {
+            console.log(`-------------  res.data  ---------------`);
+            console.log(JSON.stringify(res.data, null, 4));
 
 
-    //         res.data.dob = '1990-01-05';
-    //         res.data.pelotonUsername = 'SpinninChris';
-    //         res.data.pelotonPassword = '*******';
+            res.data.password = '**';
+            res.data.dob = '1990-01-05';
+            res.data.pelotonUsername = 'SpinninChris';
+            res.data.pelotonPassword = '*******';
+
+
+            initialState.email = res.data.email;
+            initialState.password = res.data.password;
+            initialState.firstname = res.data.firstname;
+            initialState.lastname = res.data.lastname;
+            initialState.dob = res.data.dob;
+            initialState.pelotonUsername = res.data.pelotonUsername;
+            initialState.pelotonPassword = res.data.pelotonPassword;
+
+
+            console.log('------   new  initialState   --------');
+            console.log(initialState);
+
+            setInitialStateData({
+                ...initialState
+            });
+
+            setData({
+                ...data,
+                email: res.data.email,
+                password: res.data.password,
+                firstname: res.data.firstname,
+                lastname: res.data.lastname,
+                dob: res.data.dob,
+                pelotonUsername: res.data.pelotonUsername,
+                pelotonPassword: res.data.pelotonPassword
+            });
 
 
 
-    //         setEmailOriginal(res.data.email);
-    //         // setPasswordOriginal(res.data.password);
-    //         setFirstnameOriginal(res.data.firstname);
-    //         setLastnameOriginal(res.data.lastname);
-    //         // setDobOriginal(res.data.dob);
-    //         setPelotonUsernameOriginal(res.data.pelotonUsername);
-    //         setPelotonPasswordOriginal(res.data.pelotonPassword);
+            // TODO: password changing workflow is different
+            // one way hashing does not allow to decode. show some arbitrary masked stars, and accept 'current password' and 'new password'
+            // setPassword()
+        }
+    };
 
-    //         setEmail(res.data.email);
-    //         // setPassword(res.data.password);
-    //         setFirstname(res.data.firstname);
-    //         setLastname(res.data.lastname);
-    //         // setDob(res.data.dob);
-    //         setPelotonUsername(res.data.pelotonUsername);
-    //         setPelotonPassword(res.data.pelotonPassword);
+    useEffect(() => {
 
-    //         // TODO: password changing workflow is different
-    //         // one way hashing does not allow to decode. show some arbitrary masked stars, and accept 'current password' and 'new password'
-    //         // setPassword()
+        fetchUserInfo();
 
-    //         setSubmitResponseMessage(res.data.message);
-    //     }
-    // };
-
-    // useEffect(() => {
-
-    //     fetchUserInfo();
-
-    // }, []);
+    }, []);
 
     // useEffect(() => {
 
@@ -212,41 +204,11 @@ const UserProfile = (props) => {
     // }, [userId]);
 
 
-
     const handleInputValueChange = (event) => {
-        switch (event.target.name) {
-            case 'email':
-                setEmail(event.target.value.trim());
-                setEmailChanged(true);
-                break;
-            case 'password':
-                setPassword(event.target.value.trim());
-                setPasswordChanged(true);
-                break;
-            case 'firstname':
-                setFirstname(event.target.value.trim());
-                setFirstnameChanged(true);
-                break;
-            case 'lastname':
-                setLastname(event.target.value.trim());
-                setLastnameChanged(true);
-                break;
-            case 'dob':
-                setDob(event.target.value);
-                setDobChanged(true);
-                break;
-            case 'pelotonUsername':
-                setPelotonUsername(event.target.value.trim());
-                setPelotonUsernameChanged(true);
-                break;
-            case 'pelotonPassword':
-                setPelotonPassword(event.target.value.trim());
-                setPelotonPasswordChanged(true);
-                break;
-            default:
-                console.log(`Error - Unrecognized event.target.name = ${event.target.name}`);
-                break;
-        }
+        setData({
+            ...data,
+            [event.target.name]: event.target.value
+        });
     };
 
     const handleSubmit = async (event) => {
@@ -255,22 +217,22 @@ const UserProfile = (props) => {
         // INPUT VALIDATION
         const errorMessages = [];
 
-        if (_.isEmpty(email)) {
+        if (_.isEmpty(data.email)) {
             errorMessages.push(`Email cannot be blank.`);
         }
-        if (_.isEmpty(password)) {
+        if (_.isEmpty(data.password)) {
             errorMessages.push(`Password cannot be blank.`);
         }
-        if (_.isEmpty(firstname)) {
+        if (_.isEmpty(data.firstname)) {
             errorMessages.push(`Firstname cannot be blank.`);
         }
-        if (_.isEmpty(lastname)) {
+        if (_.isEmpty(data.lastname)) {
             errorMessages.push(`Lastname cannot be blank.`);
         }
-        if (_.isEmpty(pelotonUsername)) {
+        if (_.isEmpty(data.pelotonUsername)) {
             errorMessages.push(`Peloton Username cannot be blank.`);
         }
-        if (_.isEmpty(pelotonPassword)) {
+        if (_.isEmpty(data.pelotonPassword)) {
             errorMessages.push(`Peloton Password cannot be blank.`);
         }
 
@@ -294,16 +256,22 @@ const UserProfile = (props) => {
         // }
 
         if (errorMessages.length > 0) {
-            console.log('--------   Sign In Error MessageS   ----------');
+            console.log('--------   UserProfile Submit Error Messages   ----------');
             console.log(errorMessages);
 
-            setErrorMessages(errorMessages);
+            setData({
+                ...data,
+                errorMessages
+            });
             return;
         }
 
         // disable the button until search results comes back
-        setLoading(true);
-        setErrorMessages([]);
+        setData({
+            ...data,
+            isSubmitting: true,
+            errorMessages: []
+        });
 
 
         // setTimeout(() => {
@@ -312,38 +280,23 @@ const UserProfile = (props) => {
 
 
 
-        const url = `http://${REACT_APP_NGINX_HOSTNAME}:${REACT_APP_NGINX_PORT}/api/${REACT_APP_API_VERSION}/users/{id}`;
+        const url = `http://${REACT_APP_NGINX_HOSTNAME}:${REACT_APP_NGINX_PORT}/api/${REACT_APP_API_VERSION}/users/${userId}`;
 
         const requestBody = {};
-
-        if (emailChanged) {
-            requestBody.email = email;
-        }
-        if (passwordChanged) {
-            requestBody.password = password;
-        }
-        if (firstnameChanged) {
-            requestBody.firstname = firstname;
-        }
-        if (lastnameChanged) {
-            requestBody.lastname = lastname;
-        }
-        if (dobChanged) {
-            requestBody.dob = dob;
-        }
-        if (pelotonUsernameChanged) {
-            requestBody.pelotonUsername = pelotonUsername;
-        }
-        if (pelotonPasswordChanged) {
-            requestBody.pelotonPassword = pelotonPassword;
-        }
+        requestBody.email = data.email;
+        requestBody.password = data.password;
+        requestBody.firstname = data.firstname;
+        requestBody.lastname = data.lastname;
+        requestBody.dob = data.dob;
+        requestBody.pelotonUsername = data.pelotonUsername;
+        requestBody.pelotonPassword = data.pelotonPassword;
 
         const options = {
             url,
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + authBodyJson.jwt
+                'Authorization': 'Bearer ' + jwt
             },
             data: requestBody,
             timeout: 15000,
@@ -367,30 +320,33 @@ const UserProfile = (props) => {
             console.log('--------   User Profile In Error Message 333   ----------');
             console.log(errorMessage);
 
-            setErrorMessages([errorMessage]);
+            setData({
+                ...data,
+                errorMessages: [errorMessage],
+                isSubmitting: false
+            });
         });
 
         if (res) {
             console.log(`-------------  res.data  ---------------`);
             console.log(JSON.stringify(res.data, null, 4));
 
-            setSubmitResponseMessage(res.data.message);
+            setData({
+                ...data,
+                responseMessage: res.data.message,
+                isSubmitting: false
+            });
         }
-
-        setLoading(false);
     };
 
     const handleReset = () => {
-        setEmail(emailOriginal);
-        setPassword(passwordOriginal);
-        setFirstname(firstnameOriginal);
-        setLastname(lastnameOriginal);
-        setDob(dobOriginal);
-        setPelotonUsername(pelotonUsernameOriginal);
-        setPelotonPassword(pelotonPasswordOriginal);
 
-        setLoading(false);
-        setErrorMessages([]);
+        console.log('------   handleReset  initialStateData   --------');
+        console.log(initialStateData);
+
+        setData({
+            ...initialStateData
+        });
     };
 
     return (
@@ -416,7 +372,7 @@ const UserProfile = (props) => {
                         <TextField
                             label="Email"
                             helperText="Email to log into Peloton Pace"
-                            value={email}
+                            value={data.email}
                             name="email"
                             onChange={handleInputValueChange}
                             margin="normal"
@@ -426,7 +382,7 @@ const UserProfile = (props) => {
                     <div>
                         <TextField
                             label="DOB"
-                            value={dob}
+                            value={data.dob}
                             name="dob"
                             onChange={handleInputValueChange}
                             margin="normal"
@@ -436,7 +392,7 @@ const UserProfile = (props) => {
                         <TextField
                             label="Password"
                             helperText="Password to log into Peloton Pace"
-                            value={password}
+                            value={data.password}
                             name="password"
                             onChange={handleInputValueChange}
                             margin="normal"
@@ -447,7 +403,7 @@ const UserProfile = (props) => {
                         <TextField
                             label="Peloton Username"
                             helperText="Your Peloton Digital username"
-                            value={pelotonUsername}
+                            value={data.pelotonUsername}
                             name="pelotonUsername"
                             onChange={handleInputValueChange}
                             margin="normal"
@@ -457,7 +413,7 @@ const UserProfile = (props) => {
                     <div>
                         <TextField
                             label="Firstname"
-                            value={firstname}
+                            value={data.firstname}
                             name="firstname"
                             onChange={handleInputValueChange}
                             margin="normal"
@@ -468,7 +424,7 @@ const UserProfile = (props) => {
                         <TextField
                             label="Peloton Password"
                             helperText="Your Peloton Digital password"
-                            value={pelotonPassword}
+                            value={data.pelotonPassword}
                             name="pelotonPassword"
                             onChange={handleInputValueChange}
                             margin="normal"
@@ -478,7 +434,7 @@ const UserProfile = (props) => {
                     <div>
                         <TextField
                             label="Lastname"
-                            value={lastname}
+                            value={data.lastname}
                             name="lastname"
                             onChange={handleInputValueChange}
                             margin="normal"
@@ -492,7 +448,7 @@ const UserProfile = (props) => {
                         color="primary"
                         variant="contained"
                         fullWidth={false}
-                        disabled={isLoading}
+                        disabled={data.isSubmitting}
                         onClick={handleSubmit}
                     >Submit</Button>
 
@@ -501,22 +457,22 @@ const UserProfile = (props) => {
                         variant="contained"
                         fullWidth={false}
                         // disabled={isSearchButtonDisabled}
-                        onClick={() => handleReset()}
+                        onClick={handleReset}
                     >Reset</Button>
                 </div>
 
-                {isLoading && <LinearProgress variant="query" />}
+                {data.isSubmitting && <LinearProgress variant="query" />}
 
                 {/*<div className={classes.errorMessage}>{errorMessages.map((errorMessage) => (<div>{errorMessage}</div>))}</div>*/}
-                {errorMessages.length > 0 && <div className={classes.errorMessagesContainer}>{errorMessages.map((errorMessage, index) => (<SnackbarContent
+                {data.errorMessages.length > 0 && <div className={classes.errorMessagesContainer}>{data.errorMessages.map((errorMessage, index) => (<SnackbarContent
                     className={classes.errorMessage}
                     message={errorMessage}
                     key={index}
                 />))}</div>}
 
-                {submitResponseMessage.length > 0 && <SnackbarContent
+                {data.responseMessage.length > 0 && <SnackbarContent
                     className={classes.snackbar}
-                    message={submitResponseMessage}
+                    message={data.responseMessage}
                 />}
 
 
@@ -539,6 +495,6 @@ const UserProfile = (props) => {
             </div>
         </div>
     );
-}
+};
 
 export default UserProfile;

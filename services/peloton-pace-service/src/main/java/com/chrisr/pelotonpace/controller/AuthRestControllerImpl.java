@@ -63,7 +63,7 @@ public class AuthRestControllerImpl implements AuthRestController {
 
 		// look up user and include userId in the JWT header
 		User user = userService.getUserByUsername(loginRequest.getUsername());
-		String jwt = jwtTokenProvider.generateToken(authentication, user.getId());
+		String jwt = jwtTokenProvider.generateToken(authentication, user);
 		return ResponseEntity.ok().body(new JwtAuthResponse(jwt));
 	}
 }

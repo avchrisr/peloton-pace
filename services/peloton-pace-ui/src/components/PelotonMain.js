@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 import {
@@ -11,6 +11,11 @@ import { Bar, VictoryBar, VictoryChart, VictoryLabel, VictoryVoronoiContainer, V
 import DayPicker, { DateUtils } from 'react-day-picker';
 import 'react-day-picker/lib/style.css';
 import _ from 'lodash';
+import axios from "axios";
+
+const REACT_APP_NGINX_HOSTNAME = process.env.REACT_APP_NGINX_HOSTNAME || 'localhost';
+const REACT_APP_NGINX_PORT = process.env.REACT_APP_NGINX_PORT || '9090';            // 3001
+const REACT_APP_API_VERSION = process.env.REACT_APP_API_VERSION || 'v1';
 
 const useStyles = makeStyles({
     container: {
@@ -99,8 +104,445 @@ const PelotonMain = (props) => {
     console.log(props);
 
 
+    const isAuthenticated = window.localStorage.getItem('isAuthenticated');
+    const userId = window.localStorage.getItem('userId');
+    const userFirstname = window.localStorage.getItem('userFirstname');
+    const jwt = window.localStorage.getItem('jwt');
+
+
+    console.log(`PelotonMain isAuthenticated = ${isAuthenticated}`);
+    console.log(`PelotonMain userId = ${userId}`);
+    console.log(`PelotonMain userFirstname = ${userFirstname}`);
+    console.log(`PelotonMain jwt = ${jwt}`);
+
+
+
+
+
+
+
+    // const pelotonWorkoutHistoryDataCaloriesBurned = [
+//     {
+//         x: new Date('2019-06-28'),
+//         y: 110
+//     },
+//     {
+//         x: new Date('2019-06-29'),
+//         y: 122
+//     },
+//     {
+//         x: new Date('2019-06-30'),
+//         y: 195
+//     },
+//     {
+//         x: new Date('2019-07-01'),
+//         y: 279
+//     },
+//     {
+//         x: new Date('2019-07-02'),
+//         y: 400
+//     },
+//     {
+//         x: new Date('2019-07-05'),
+//         y: 359
+//     },
+//     {
+//         x: new Date('2019-07-06'),
+//         y: 320
+//     },
+//     {
+//         x: new Date('2019-07-08'),
+//         y: 322
+//     },
+//     {
+//         x: new Date('2019-07-09'),
+//         y: 395
+//     },
+//     {
+//         x: new Date('2019-07-10'),
+//         y: 279
+//     },
+//     {
+//         x: new Date('2019-07-11'),
+//         y: 400
+//     },
+//     {
+//         x: new Date('2019-07-13'),
+//         y: 359
+//     }
+// ];
+
+    const pelotonWorkoutHistoryDataCaloriesBurned = [
+        {
+            x: '6/28',
+            y: 110
+        },
+        {
+            x: '6/29',
+            y: 122
+        },
+        {
+            x: '6/30',
+            y: 195
+        },
+        {
+            x: '7/1',
+            y: 279
+        },
+        {
+            x: '7/2',
+            y: 400
+        },
+        {
+            x: '7/5',
+            y: 359
+        },
+        {
+            x: '7/6',
+            y: 320
+        },
+        {
+            x: '7/8',
+            y: 322
+        },
+        {
+            x: '7/9',
+            y: 395
+        },
+        {
+            x: '7/10',
+            y: 279
+        },
+        {
+            x: '7/11',
+            y: 400
+        },
+        {
+            x: '7/13',
+            y: 359
+        }
+    ];
+
+
+// const pelotonWorkoutHistoryDataAvgHeartRate = [
+//     {
+//         x: new Date('2019-06-28'),
+//         y: 117
+//     },
+//     {
+//         x: new Date('2019-06-29'),
+//         y: 151
+//     },
+//     {
+//         x: new Date('2019-06-30'),
+//         y: 137
+//     },
+//     {
+//         x: new Date('2019-07-01'),
+//         y: 150
+//     },
+//     {
+//         x: new Date('2019-07-02'),
+//         y: 148
+//     },
+//     {
+//         x: new Date('2019-07-05'),
+//         y: 134
+//     },
+//     {
+//         x: new Date('2019-07-06'),
+//         y: 158
+//     },
+//     {
+//         x: new Date('2019-07-08'),
+//         y: 160
+//     },
+//     {
+//         x: new Date('2019-07-09'),
+//         y: 151
+//     },
+//     {
+//         x: new Date('2019-07-10'),
+//         y: 155
+//     },
+//     {
+//         x: new Date('2019-07-11'),
+//         y: 153
+//     },
+//     {
+//         x: new Date('2019-07-13'),
+//         y: 147
+//     }
+// ];
+
+    const pelotonWorkoutHistoryDataAvgHeartRate = [
+        {
+            x: '6/28',
+            y: 117
+        },
+        {
+            x: '6/29',
+            y: 151
+        },
+        {
+            x: '6/30',
+            y: 137
+        },
+        {
+            x: '7/1',
+            y: 150
+        },
+        {
+            x: '7/2',
+            y: 148
+        },
+        {
+            x: '7/5',
+            y: 134
+        },
+        {
+            x: '7/6',
+            y: 158
+        },
+        {
+            x: '7/8',
+            y: 160
+        },
+        {
+            x: '7/9',
+            y: 151
+        },
+        {
+            x: '7/10',
+            y: 155
+        },
+        {
+            x: '7/11',
+            y: 153
+        },
+        {
+            x: '7/13',
+            y: 147
+        }
+    ];
+
+// const pelotonWorkoutHistoryDataClassDuration = [
+//     {
+//         x: new Date('2019-06-28'),
+//         y: 20
+//     },
+//     {
+//         x: new Date('2019-06-29'),
+//         y: 20
+//     },
+//     {
+//         x: new Date('2019-06-30'),
+//         y: 20
+//     },
+//     {
+//         x: new Date('2019-07-01'),
+//         y: 30
+//     },
+//     {
+//         x: new Date('2019-07-02'),
+//         y: 30
+//     },
+//     {
+//         x: new Date('2019-07-05'),
+//         y: 30
+//     },
+//     {
+//         x: new Date('2019-07-06'),
+//         y: 30
+//     },
+//     {
+//         x: new Date('2019-07-08'),
+//         y: 30
+//     },
+//     {
+//         x: new Date('2019-07-09'),
+//         y: 30
+//     },
+//     {
+//         x: new Date('2019-07-10'),
+//         y: 20
+//     },
+//     {
+//         x: new Date('2019-07-11'),
+//         y: 30
+//     },
+//     {
+//         x: new Date('2019-07-13'),
+//         y: 30
+//     }
+// ];
+
+
+    const pelotonWorkoutHistoryDataClassDuration = [
+        {
+            x: '6/28',
+            y: 20
+        },
+        {
+            x: '6/29',
+            y: 20
+        },
+        {
+            x: '6/30',
+            y: 20
+        },
+        {
+            x: '7/1',
+            y: 30
+        },
+        {
+            x: '7/2',
+            y: 30
+        },
+        {
+            x: '7/5',
+            y: 30
+        },
+        {
+            x: '7/6',
+            y: 30
+        },
+        {
+            x: '7/8',
+            y: 30
+        },
+        {
+            x: '7/9',
+            y: 30
+        },
+        {
+            x: '7/10',
+            y: 20
+        },
+        {
+            x: '7/11',
+            y: 30
+        },
+        {
+            x: '7/13',
+            y: 30
+        }
+    ];
+
+
+
+
+    // const initialState = {
+    //     email: '',
+    //     password: '',
+    //     firstname: '',
+    //     lastname: '',
+    //     dob: '',
+    //     pelotonUsername: '',
+    //     pelotonPassword: '',
+    //     errorMessages: [],
+    //     isSubmitting: false,
+    //     responseMessage: ''
+    // };
+
+    // const [data, setData] = useState(initialState);
+
+    // const fetchUserInfo = async () => {
+    //     // call to retrieve the user info
+    //     const url = `http://${REACT_APP_NGINX_HOSTNAME}:${REACT_APP_NGINX_PORT}/api/${REACT_APP_API_VERSION}/users/${userId}`;
+    //
+    //     const options = {
+    //         url,
+    //         method: 'GET',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //             'Authorization': 'Bearer ' + jwt
+    //         },
+    //         // data: requestBody,
+    //         timeout: 5000,
+    //         // auth: {
+    //         //     username: environment.username,
+    //         //     password: environment.password
+    //         // }
+    //     };
+    //
+    //     console.log(`URL = ${url}`);
+    //
+    //     const res = await axios(options).catch((err) => {
+    //         console.log(`-------------  AXIOS ERROR  ---------------`);
+    //         console.log(err);
+    //         console.log(JSON.stringify(err, null, 4));
+    //         console.log(`-------------  ERROR RESPONSE  ---------------`);
+    //         console.log(err.response);
+    //
+    //         const errorMessage = _.get(err, 'response.data.message') || _.get(err, 'message');
+    //
+    //         console.log('--------   User Profile Error Message   ----------');
+    //         console.log(errorMessage);
+    //
+    //         setData({
+    //             ...data,
+    //             errorMessages: [errorMessage]
+    //         });
+    //     });
+    //
+    //     if (res) {
+    //         console.log(`-------------  res.data  ---------------`);
+    //         console.log(JSON.stringify(res.data, null, 4));
+    //
+    //
+    //         res.data.password = '**';
+    //         res.data.dob = '1990-01-05';
+    //         res.data.pelotonUsername = 'SpinninChris';
+    //         res.data.pelotonPassword = '*******';
+    //
+    //
+    //         initialState.email = res.data.email;
+    //         initialState.password = res.data.password;
+    //         initialState.firstname = res.data.firstname;
+    //         initialState.lastname = res.data.lastname;
+    //         initialState.dob = res.data.dob;
+    //         initialState.pelotonUsername = res.data.pelotonUsername;
+    //         initialState.pelotonPassword = res.data.pelotonPassword;
+    //
+    //
+    //         console.log('------   new  initialState   --------');
+    //         console.log(initialState);
+    //
+    //         setData({
+    //             ...data,
+    //             email: res.data.email,
+    //             password: res.data.password,
+    //             firstname: res.data.firstname,
+    //             lastname: res.data.lastname,
+    //             dob: res.data.dob,
+    //             pelotonUsername: res.data.pelotonUsername,
+    //             pelotonPassword: res.data.pelotonPassword
+    //         });
+    //
+    //
+    //
+    //         // TODO: password changing workflow is different
+    //         // one way hashing does not allow to decode. show some arbitrary masked stars, and accept 'current password' and 'new password'
+    //         // setPassword()
+    //     }
+    // };
+
+    // useEffect(() => {
+    //
+    //     // fetchUserInfo();
+    //
+    // }, []);
+
+
+
     const workedOutDates = [];
-    props.pelotonWorkoutListData.data.forEach(workout => {
+
+
+    // TODO: I need the ride data. fetch only the last 20? or is there a way to fetch based on date range (e.g. last 30 days?)
+    //  store it in local storage, and use it as the initial data in the List page
+
+    props.pelotonWorkoutOverviewData.data.forEach(workout => {
         workedOutDates.push(new Date(workout.start_time * 1000));
     });
 
@@ -148,10 +590,10 @@ const PelotonMain = (props) => {
     return (
         <>
             <div className="">
-                <div className={classes.workoutSummaryHeader}><h2>{props.pelotonWorkoutListData.total} <span>Total Workouts</span></h2></div>
+                <div className={classes.workoutSummaryHeader}><h2>{props.pelotonWorkoutOverviewData.total} <span>Total Workouts</span></h2></div>
                 <ul className={classes.workoutSummaryIconsWrapper}>
 
-                    {props.pelotonWorkoutListData.data.length > 0 && props.pelotonWorkoutListData.data[0].user.workout_counts.map((category, index) => {
+                    {props.pelotonWorkoutOverviewData.data.length > 0 && props.pelotonWorkoutOverviewData.data[0].user.workout_counts.map((category, index) => {
                         return (<li key={index} className={classes.workoutSummaryIcons}><img src={category.icon_url} alt={category.name} /><div className="sc-haEqAx gGCavG"><b>{category.name}</b></div>{category.count}</li>);
                     })}
 
@@ -232,7 +674,7 @@ const PelotonMain = (props) => {
                                     <Bar />
                                 }
                                 style={chartStyle}
-                                data={props.pelotonWorkoutHistoryDataCaloriesBurned}
+                                data={pelotonWorkoutHistoryDataCaloriesBurned}
                                 labels={({ datum }) => datum.y}
                                 // data={[
                                 //     { x: new Date(1980, 1, 1), y: 9 },
@@ -270,7 +712,7 @@ const PelotonMain = (props) => {
                                     <Bar />
                                 }
                                 style={chartStyleAvgHeartRate}
-                                data={props.pelotonWorkoutHistoryDataAvgHeartRate}
+                                data={pelotonWorkoutHistoryDataAvgHeartRate}
                                 labels={({ datum }) => datum.y}
 
                                 // data={[
@@ -318,7 +760,7 @@ const PelotonMain = (props) => {
                                     <Bar />
                                 }
                                 style={chartStyleAvgHeartRate}
-                                data={props.pelotonWorkoutHistoryDataClassDuration}
+                                data={pelotonWorkoutHistoryDataClassDuration}
                                 labels={({ datum }) => datum.y}
                                 // labelComponent={<VictoryLabel dy={30}/>}
 
@@ -366,7 +808,7 @@ const PelotonMain = (props) => {
                                     <Bar />
                                 }
                                 style={chartStyleAvgHeartRate}
-                                data={props.pelotonWorkoutHistoryDataClassDuration}
+                                data={pelotonWorkoutHistoryDataClassDuration}
                                 labels={({ datum }) => datum.y}
                                 // labelComponent={<VictoryLabel dy={30}/>}
 
