@@ -62,6 +62,11 @@ public class UserService {
     }
 
     @Transactional
+    public void updateUserById(long id, User user) {
+        userRepository.updateUserById(id, user);
+    }
+
+    @Transactional
     public void addUser(User user) {
         user.setId(userRepository.getNextSequence());
         userRepository.addUser(user);

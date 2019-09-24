@@ -30,11 +30,11 @@ public class PelotonRepository extends RepositoryBase {
         this.objectMapper = objectMapper;
     }
 
-    public PelotonUserSession getPelotonUserSessionByUsername(String username) {
+    public PelotonUserSession getPelotonUserSessionByUsername(String pelotonPaceUsername) {
 //        String errorMessage = String.format("Peloton User Session not found with username = %s", username);
 
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("username", username);
+        params.addValue("pelotonPaceUsername", pelotonPaceUsername);
 
         // TODO: add index on username
 
@@ -78,7 +78,7 @@ public class PelotonRepository extends RepositoryBase {
     // SQL QUERIES AND MAPPERS
     // ---------------------------
 
-    private static final String GET_PELOTON_USER_SESSION_BY_USERNAME_QUERY = "SELECT data FROM peloton_user_session WHERE data->>'username' = :username";
+    private static final String GET_PELOTON_USER_SESSION_BY_USERNAME_QUERY = "SELECT data FROM peloton_user_session WHERE data->>'pelotonPaceUsername' = :pelotonPaceUsername";
     private static final String INSERT_PELOTON_USER_SESSION_QUERY = "INSERT INTO peloton_user_session (data) VALUES (:pelotonUserSession::jsonb)";
     private static final String UPDATE_PELOTON_USER_SESSION_QUERY = "UPDATE peloton_user_session SET data = (:pelotonUserSession::jsonb) WHERE (data->>'id')::bigint = :id";
 }

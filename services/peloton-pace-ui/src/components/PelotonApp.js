@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
 
-import { SnackbarContent } from '@material-ui/core';
+import {LinearProgress, SnackbarContent} from '@material-ui/core';
 
 import NavTabs from './NavTabs';
 import PelotonMain from './PelotonMain';
@@ -14,6 +14,10 @@ import {AuthContext} from "../App";
 import PelotonWorkoutList from "./PelotonWorkoutList";
 import PelotonWorkoutDetail from "./PelotonWorkoutDetail";
 import { navigate, useRoutes } from 'hookrouter';
+
+const REACT_APP_NGINX_HOSTNAME = process.env.REACT_APP_NGINX_HOSTNAME || 'localhost';
+const REACT_APP_NGINX_PORT = process.env.REACT_APP_NGINX_PORT || '3001';
+const REACT_APP_API_VERSION = process.env.REACT_APP_API_VERSION || 'v1';
 
 const useStyles = makeStyles({
     container: {
@@ -116,7 +120,7 @@ const PelotonApp = (props) => {
     console.log('----------   peloton app props   -------------');
     console.log(props);
 
-    const {state: authState} = useContext(AuthContext);
+    const {state: authState} = useContext(AuthContext);     //  DOES NOT WORK
 
     console.log('------------   PelotonApp AuthState   --------------');
     console.log(authState);
@@ -125,11 +129,12 @@ const PelotonApp = (props) => {
     const isAuthenticated = window.localStorage.getItem('isAuthenticated');
     const userId = window.localStorage.getItem('userId');
     const userFirstname = window.localStorage.getItem('userFirstname');
-
+    const jwt = window.localStorage.getItem('jwt');
 
     console.log(`PelotonApp isAuthenticated = ${isAuthenticated}`);
     console.log(`PelotonApp userId = ${userId}`);
     console.log(`PelotonApp userFirstname = ${userFirstname}`);
+    console.log(`PelotonApp jwt = ${jwt}`);
 
 
     const initialPelotonWorkoutOverviewData = {
@@ -1198,10 +1203,14 @@ const PelotonApp = (props) => {
         "page": 0
     };
 
-    const [pelotonWorkoutOverviewData, setPelotonWorkoutOverviewData] = useState(initialPelotonWorkoutOverviewData);
+    // const [pelotonWorkoutOverviewData, setPelotonWorkoutOverviewData] = useState(initialPelotonWorkoutOverviewData);
 
-
-    const [errorMessages, setErrorMessages] = useState([]);
+    const initialStateData = {
+        pelotonWorkoutOverviewData: {},
+        isLoading: true,
+        errorMessages: []
+    };
+    const [data, setData] = useState(initialStateData);
 
 
 
@@ -1211,53 +1220,71 @@ const PelotonApp = (props) => {
         // const pelotonSessionId = '176b1e04d8054c70820d8981b613b0e1';
         //
         // // call to retrieve the user info
-        // // const url = `http://${REACT_APP_NGINX_HOSTNAME}:${REACT_APP_NGINX_PORT}/api/${REACT_APP_API_VERSION}/users/${userId}`;
+        const url = `http://${REACT_APP_NGINX_HOSTNAME}:${REACT_APP_NGINX_PORT}/api/${REACT_APP_API_VERSION}/peloton/get-workout-summary`;  // ?limit=15&page=2
+        // const url = `http://${REACT_APP_NGINX_HOSTNAME}:${REACT_APP_NGINX_PORT}/api/${REACT_APP_API_VERSION}/users/${userId}`;
         // const url = `https://api.pelotoncycle.com/api/user/${pelotonUserId}/workouts?joins=user,ride,ride.instructor&limit=20&page=0&sort_by=-created`;
         // // TODO: use BE API to fetch peloton data as browser request to Peloton directly is blocked by CORS policy
         //
         // // ex) https://api.pelotoncycle.com/api/user/{userId}/workouts?joins=user,ride,ride.instructor&limit=20&page=0&sort_by=-created
         //
-        // const options = {
-        //     url,
-        //     method: 'GET',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //         // 'Authorization': 'Bearer ' + jwt
-        //         'Cookie': `peloton_session_id=${pelotonSessionId}`
-        //     },
-        //     // data: requestBody,
-        //     timeout: 5000,
-        //     // auth: {
-        //     //     username: environment.username,
-        //     //     password: environment.password
-        //     // }
-        // };
-        //
-        // console.log(`URL = ${url}`);
-        //
-        // const res = await axios(options).catch((err) => {
-        //     console.log(`-------------  AXIOS ERROR  ---------------`);
-        //     console.log(err);
-        //     console.log(JSON.stringify(err, null, 4));
-        //     console.log(`-------------  ERROR RESPONSE  ---------------`);
-        //     console.log(err.response);
-        //
-        //     const errorMessage = _.get(err, 'response.data.message') || _.get(err, 'message');
-        //
-        //     console.log('--------   Peloton Workout Fetch - Error Message   ----------');
-        //     console.log(errorMessage);
-        //
-        //     setErrorMessages([errorMessage]);
-        // });
-        //
-        // if (res) {
-        //     console.log(`-------------  Peloton Workout Fetch - res.data  ---------------`);
-        //     console.log(JSON.stringify(res.data, null, 4));
-        //
-        // }
+
+        const options = {
+            url,
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + jwt
+                // 'Cookie': `peloton_session_id=${pelotonSessionId}`
+            },
+            // data: requestBody,
+            timeout: 5000,
+            // auth: {
+            //     username: environment.username,
+            //     password: environment.password
+            // }
+        };
+
+        console.log(`URL = ${url}`);
+
+        const res = await axios(options).catch((err) => {
+            console.log(`-------------  AXIOS ERROR  ---------------`);
+            console.log(err);
+            console.log(JSON.stringify(err, null, 4));
+            console.log(`-------------  ERROR RESPONSE  ---------------`);
+            console.log(err.response);
+
+            const errorMessage = _.get(err, 'response.data.message') || _.get(err, 'message');
+
+            console.log('--------   Peloton Workout Fetch - Error Message   ----------');
+            console.log(errorMessage);
+
+            setData({
+                ...data,
+                errorMessages: [errorMessage]
+            });
+        });
+
+        if (res) {
+            console.log(`-------------  Peloton Workout Fetch - res.data  ---------------`);
+            console.log(JSON.stringify(res.data, null, 4));
+
+            setData({
+                ...data,
+                pelotonWorkoutOverviewData: res.data,
+                isLoading: false
+            });
+
+            window.localStorage.setItem('pelotonWorkoutOverviewData', JSON.stringify(res.data));
+
+        }
 
         window.localStorage.setItem('pelotonWorkoutOverviewData', JSON.stringify(initialPelotonWorkoutOverviewData));
 
+        setData({
+            ...data,
+            pelotonWorkoutOverviewData: initialPelotonWorkoutOverviewData,
+            isLoading: false
+        });
     };
 
     useEffect(() => {
@@ -1306,15 +1333,16 @@ Headers
     console.log(`PelotonApp window.location.pathname = ${window.location.pathname}`);
 
     return (
+        data.isLoading ? <LinearProgress /> :
         <div>
             <NavTabs
-                pelotonWorkoutOverviewData={pelotonWorkoutOverviewData}
+                pelotonWorkoutOverviewData={data.pelotonWorkoutOverviewData}
             />
 
-            {window.location.pathname === '/' && <PelotonMain pelotonWorkoutOverviewData={pelotonWorkoutOverviewData} />}
+            {window.location.pathname === '/' && <PelotonMain pelotonWorkoutOverviewData={data.pelotonWorkoutOverviewData} />}
             {window.location.pathname !== '/' && routeResult || <div>404 NOT FOUND</div>}
 
-            {errorMessages.length > 0 && <div className={classes.errorMessagesContainer}>{errorMessages.map((errorMessage, index) => (<SnackbarContent
+            {data.errorMessages.length > 0 && <div className={classes.errorMessagesContainer}>{data.errorMessages.map((errorMessage, index) => (<SnackbarContent
                 className={classes.errorMessage}
                 message={errorMessage}
                 key={index}

@@ -82,7 +82,7 @@ const NavTabs = (props) => {
 
             {isAuthenticated === 'true' &&
             <div className={classes.profileBar}>
-                <div style={{lineHeight: '2rem'}}><Button size="large" variant="text">{userFirstname}</Button> <span>Last Workout At: {lastWorkoutDate.toDateString()} | Since {userCreatedDate.toDateString()}</span></div>
+                <div style={{lineHeight: '2rem'}}><Button size="large" variant="text">Welcome {userFirstname}!</Button> <span><b>Your last workout:</b> {lastWorkoutDate.toDateString()} | <b>Registered since</b> {userCreatedDate.toLocaleDateString()}</span></div>
                 <Button onClick={handleLogOut} variant="outlined">Log Out</Button>
             </div>}
         </div>

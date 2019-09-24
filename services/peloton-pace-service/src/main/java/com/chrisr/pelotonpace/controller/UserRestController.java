@@ -5,6 +5,7 @@ import com.chrisr.pelotonpace.response.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RequestMapping("/users")
@@ -18,9 +19,9 @@ public interface UserRestController {
     @GetMapping(path = "/{id}")
     ResponseEntity<User> getUserById(@PathVariable(name = "id") long id);
 
-    // TODO: remove this endpoint. use /auth/register instead
-//    @PostMapping
-//    ResponseEntity<User> addUser(@RequestBody User user);
+    @PatchMapping(path = "/{id}")
+    ResponseEntity<ApiResponse> updateUserById(@PathVariable(name = "id") long id,
+                                                @Valid @RequestBody User user);
 
     @DeleteMapping(path = "/{id}")
     ResponseEntity<ApiResponse> deleteUser(@PathVariable(name = "id") long id);

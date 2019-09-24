@@ -6,6 +6,7 @@ public class PelotonUserSession {
     private String username;
     private String userId;
     private String sessionId;
+    private String pelotonPaceUsername;
 
     public long getId() {
         return id;
@@ -39,6 +40,14 @@ public class PelotonUserSession {
         this.sessionId = sessionId;
     }
 
+    public String getPelotonPaceUsername() {
+        return pelotonPaceUsername;
+    }
+
+    public void setPelotonPaceUsername(String pelotonPaceUsername) {
+        this.pelotonPaceUsername = pelotonPaceUsername;
+    }
+
     @Override
     public String toString() {
         return "PelotonUserSession{" +
@@ -46,6 +55,7 @@ public class PelotonUserSession {
                 ", username='" + username + '\'' +
                 ", userId='" + userId + '\'' +
                 ", sessionId='" + sessionId + '\'' +
+                ", pelotonPaceUsername='" + pelotonPaceUsername + '\'' +
                 '}';
     }
 }

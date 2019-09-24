@@ -7,6 +7,7 @@ import {
     Icon, LinearProgress, List, ListItem, ListItemAvatar, ListItemText, Paper, Typography
 } from '@material-ui/core';
 import { deepOrange, deepPurple } from '@material-ui/core/colors';
+import ExplicitIcon from '@material-ui/icons/Explicit';
 
 import { navigate } from 'hookrouter';
 
@@ -94,7 +95,7 @@ const PelotonWorkoutDetail = (props) => {
 
     const [workoutId, setWorkoutId] = useState('');
     const [instructorName, setInstructorName] = useState('');
-    const [explicitClass, setExplicitClass] = useState('');
+    const [explicitClass, setExplicitClass] = useState(false);
     const [cadenceMetrics, setCadenceMetrics] = useState({});
     const [heartRateMetrics, setHeartRateMetrics] = useState({});
     const [caloriesSummary, setCaloriesSummary] = useState({});
@@ -241,13 +242,7 @@ const PelotonWorkoutDetail = (props) => {
 
         setWorkoutId(workoutDetail.id);
         setInstructorName(fetchedRideDetail.ride.instructor.name);
-        setExplicitClass(fetchedRideDetail.ride.is_explicit ? '(explicit)' : '');
-
-        // const workoutId = workout.id;
-        // const instructorName = workout.ride.instructor.name;
-        // const explicitClass = workout.ride.is_explicit ? '(explicit)' : '';
-
-
+        setExplicitClass(fetchedRideDetail.ride.is_explicit);
 
         const cadenceMetrics = _.find(fetchedWorkoutMetrics.metrics, (category) => category.slug === 'cadence');
         const heartRateMetrics = _.find(fetchedWorkoutMetrics.metrics, (category) => category.slug === 'heart_rate');
@@ -282,7 +277,7 @@ const PelotonWorkoutDetail = (props) => {
                 rideDetail: fetchedRideDetail,
                 isLoading: false
             });
-        }, 1000);
+        }, 300);
 
 
 
@@ -339,58 +334,6 @@ const PelotonWorkoutDetail = (props) => {
         }
     });
 
-    const pelotonWorkoutHistoryDataAvgHeartRate = [
-        {
-            x: '6/28',
-            y: 117
-        },
-        {
-            x: '6/29',
-            y: 151
-        },
-        {
-            x: '6/30',
-            y: 137
-        },
-        {
-            x: '7/1',
-            y: 150
-        },
-        {
-            x: '7/2',
-            y: 148
-        },
-        {
-            x: '7/5',
-            y: 134
-        },
-        {
-            x: '7/6',
-            y: 158
-        },
-        {
-            x: '7/8',
-            y: 160
-        },
-        {
-            x: '7/9',
-            y: 151
-        },
-        {
-            x: '7/10',
-            y: 155
-        },
-        {
-            x: '7/11',
-            y: 153
-        },
-        {
-            x: '7/13',
-            y: 147
-        }
-    ];
-
-
     const handleClickInstructor = () => {
         setOpen(true);
         // openDialog({
@@ -404,41 +347,6 @@ const PelotonWorkoutDetail = (props) => {
     const handleClick = (event) => {
         navigate('/peloton-workout-detail');
     };
-
-    const openDialog = (props) => {
-
-        console.log(props);
-        console.log(open);
-
-        return (
-            <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
-                <DialogTitle id="customized-dialog-title" onClose={handleClose}>
-                    {props.name}
-                </DialogTitle>
-                <DialogContent dividers>
-                    <Typography gutterBottom>
-                        Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis
-                        in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
-                    </Typography>
-                    <Typography gutterBottom>
-                        Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis
-                        lacus vel augue laoreet rutrum faucibus dolor auctor.
-                    </Typography>
-                    <Typography gutterBottom>
-                        Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel
-                        scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus
-                        auctor fringilla.
-                    </Typography>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose} color="primary">
-                        Save changes
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        );
-    };
-
 
     // const cartesianInterpolations = [
     //     "basis",
@@ -457,7 +365,7 @@ const PelotonWorkoutDetail = (props) => {
     return (
         data.isLoading ? <LinearProgress /> :
         <div className={classes.root}>
-            <div style={{fontSize: '1.5rem', backgroundColor: 'whitesmoke', padding: '0.8rem 1rem'}}>{`${instructorName} - ${data.rideDetail.ride.title} ${explicitClass}`}</div>
+            <div style={{fontSize: '1.5rem', backgroundColor: 'whitesmoke', padding: '0.8rem 1rem'}}>{`${instructorName} - ${data.rideDetail.ride.title}`} {explicitClass && <ExplicitIcon color="primary" />}</div>
             <List>
                 <ListItem alignItems="flex-start">
                     <ListItemAvatar style={{margin: '1rem'}}>

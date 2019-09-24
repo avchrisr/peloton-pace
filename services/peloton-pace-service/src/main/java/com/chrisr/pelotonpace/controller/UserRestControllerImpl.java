@@ -1,5 +1,6 @@
 package com.chrisr.pelotonpace.controller;
 
+import com.chrisr.pelotonpace.exception.BadRequestException;
 import com.chrisr.pelotonpace.repository.entity.User;
 import com.chrisr.pelotonpace.response.ApiResponse;
 import com.chrisr.pelotonpace.service.UserService;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Date;
 import java.util.List;
 
@@ -40,12 +42,30 @@ public class UserRestControllerImpl implements UserRestController {
         return ResponseEntity.ok().body(user);
     }
 
-//    @Override
-//    public ResponseEntity<User> addUser(@RequestBody User user) {
-//        user.setPassword(passwordEncoder.encode(user.getPassword()));
-//        userService.addUser(user);
-//        return ResponseEntity.ok().body(user);
-//    }
+    @Override
+    public ResponseEntity<ApiResponse> updateUserById(long id, @Valid User user) {
+
+        // at least one field must exist. "id" field does not count
+
+        // TODO: update passwords via a separate workflow, with current password + new password workflow
+        //  - store encrypted password in DB, and have a way to decrypt peloton password for logging in purpose
+
+        if ((user.getUsername() == null || user.getUsername().isBlank()) &&
+                (user.getFirstname() == null || user.getFirstname().isBlank()) &&
+                (user.getLastname() == null || user.getLastname().isBlank()) &&
+                (user.getDob() == null || user.getDob().isBlank()) &&
+                (user.getEmail() == null || user.getEmail().isBlank()) &&
+                (user.getPelotonUsername() == null || user.getPelotonUsername().isBlank()) &&
+                (user.getPelotonPassword() == null || user.getPelotonPassword().isBlank())) {
+
+            String errorMessage = "At least one field is required.";
+            throw new BadRequestException(errorMessage);
+        }
+
+        userService.updateUserById(id, user);
+
+        return ResponseEntity.ok().body(new ApiResponse(true, "Successfully updated user."));
+    }
 
     @Override
     public ResponseEntity<ApiResponse> deleteUser(long id) {

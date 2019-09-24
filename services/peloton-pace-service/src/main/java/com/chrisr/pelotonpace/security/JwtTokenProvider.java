@@ -27,7 +27,7 @@ public class JwtTokenProvider {
 
 
 	public String generateToken(Authentication authentication, User user) {
-//		User user = (User) authentication.getPrincipal();
+//		org.springframework.security.core.userdetails.User userPrincipal = (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
 
 		Date now = new Date();
 		Date expirationDate = new Date(now.getTime() + jwtExpirationInMilliseconds);

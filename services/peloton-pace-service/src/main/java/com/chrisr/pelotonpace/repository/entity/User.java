@@ -9,7 +9,8 @@ public class User {
     private String lastname;
     private String dob;         // yyyy-MM-dd
     private String email;
-    private String description;
+    private String pelotonUsername;
+    private String pelotonPassword;
 
     // *** IMPORTANT ***  empty constructor is necessary ONLY IF other constructors with arguments exist
     // or it will cause "com.fasterxml.jackson.databind.exc.InvalidDefinitionException: Cannot construct instance of ..."
@@ -71,12 +72,20 @@ public class User {
         this.email = email;
     }
 
-    public String getDescription() {
-        return description;
+    public String getPelotonUsername() {
+        return pelotonUsername;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setPelotonUsername(String pelotonUsername) {
+        this.pelotonUsername = pelotonUsername;
+    }
+
+    public String getPelotonPassword() {
+        return pelotonPassword;
+    }
+
+    public void setPelotonPassword(String pelotonPassword) {
+        this.pelotonPassword = pelotonPassword;
     }
 
     @Override
@@ -89,7 +98,8 @@ public class User {
                 ", lastname='" + lastname + '\'' +
                 ", dob='" + dob + '\'' +
                 ", email='" + email + '\'' +
-                ", description='" + description + '\'' +
+                ", pelotonUsername='" + pelotonUsername + '\'' +
+                ", pelotonPassword='" + pelotonPassword + '\'' +
                 '}';
     }
 }

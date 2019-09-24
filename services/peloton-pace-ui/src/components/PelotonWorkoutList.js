@@ -7,6 +7,7 @@ import {
     Icon, List, ListItem, ListItemAvatar, ListItemText, Paper, Typography
 } from '@material-ui/core';
 import { deepOrange, deepPurple } from '@material-ui/core/colors';
+import ExplicitIcon from '@material-ui/icons/Explicit';
 
 import { navigate } from 'hookrouter';
 import _ from "lodash";
@@ -48,12 +49,18 @@ const useStyles = makeStyles(theme => ({
         color: '#fff',
         backgroundColor: deepPurple[400],
     },
-
-    listItem: {
+    listItemTitle: {
         display: 'block',
 
         '&:hover': {
             cursor: 'pointer'
+        }
+    },
+    listItem: {
+        display: 'block',
+
+        '&:hover': {
+            // cursor: 'pointer'
         }
     },
     paper: {
@@ -84,6 +91,7 @@ const PelotonWorkoutList = (props) => {
 
     // TODO: in order to display the metrics on the list page, I need to retrieve the metrics here.... for every workout listed....
     //  maybe i should only display them in the detail page... not on the list page... ?
+    //  <--  this. remove metrics details from the list page
 
 
 
@@ -132,7 +140,7 @@ const PelotonWorkoutList = (props) => {
 
     return (
         <div className={classes.root}>
-            <div style={{fontSize: '1.5rem', backgroundColor: 'whitesmoke', padding: '0.8rem 1rem'}}>2019 - September</div>
+            <div style={{fontSize: '1.5rem', backgroundColor: 'whitesmoke', padding: '0.8rem 1rem'}}>{pelotonWorkoutOverviewData.total} Total Workouts</div>
             <List>
                 {pelotonWorkoutOverviewData.data.map((workout) => {
 
@@ -146,11 +154,11 @@ const PelotonWorkoutList = (props) => {
                     return (
                         <span key={workout.id}>
                         <ListItem alignItems="flex-start">
-                            <ListItemAvatar style={{margin: '1rem'}}>
+                            <ListItemAvatar style={{margin: '1.5rem'}}>
                                 <span>
                                     <Avatar className={classes.bigAvatar} alt={instructorName} src={workout.ride.instructor.image_url} />
-                                    <div style={{fontSize: '1.5rem', margin: '0.5rem auto'}}>408 kcal</div>
-                                    <div>(15 kcal / min)</div>
+                                    {/*<div style={{fontSize: '1.5rem', margin: '0.5rem auto'}}>408 kcal</div>*/}
+                                    {/*<div>(15 kcal / min)</div>*/}
                                 </span>
                             </ListItemAvatar>
                             <ListItemText style={{margin: '1rem'}}
@@ -159,11 +167,11 @@ const PelotonWorkoutList = (props) => {
                                                   <Typography
                                                       component="span"
                                                       variant="h6"
-                                                      className={classes.listItem}
+                                                      className={classes.listItemTitle}
                                                       color="textPrimary"
                                                       onClick={() => handleClick({workout})}
                                                   >
-                                                      {`${instructorName} - ${workout.ride.title} ${explicitClass}`}
+                                                      <span style={{lineHeight: '2rem'}}>{`${instructorName} - ${workout.ride.title}`} {workout.ride.is_explicit && <ExplicitIcon color="primary" />}</span>
                                                       {/* Emma Lovewell - 30 min Trap Music Ride */}
                                                   </Typography>
                                                   <Typography
@@ -172,7 +180,7 @@ const PelotonWorkoutList = (props) => {
                                                       className={classes.listItem}
                                                       color="textPrimary"
                                                   >
-                                                      {`Live Class Location: ${workout.ride.location.toUpperCase()}`}
+                                                      <b>Live Class Location: </b>{`${workout.ride.location.toUpperCase()}`}
                                                   </Typography>
                                                   <Typography
                                                       component="span"
@@ -191,32 +199,32 @@ const PelotonWorkoutList = (props) => {
                                                       {workoutStartDateString}
                                                       {/* Wednesday, July 24, 2019 @ 6:40 PM */}
                                                   </Typography>
-                                                  <span style={{display: 'flex', margin: '1rem 0 auto', justifyContent: 'space-around'}}>
-                                            <span style={{textAlign: 'center'}}>
-                                                <Avatar component="span" className={classes.purpleAvatar}>{workout.ride.duration / 60}</Avatar>
-                                                <span>Duration</span>
-                                            </span>
-                                            <span style={{textAlign: 'center'}}>
-                                                <Avatar component="span" className={classes.purpleAvatar}>408</Avatar>
-                                                <span>Calories</span>
-                                            </span>
-                                            <span style={{textAlign: 'center'}}>
-                                                <Avatar component="span" className={classes.purpleAvatar}>145</Avatar>
-                                                <span>Avg. Heart Rate</span>
-                                            </span>
-                                            <span style={{textAlign: 'center'}}>
-                                                <Avatar component="span" className={classes.purpleAvatar}>155</Avatar>
-                                                <span>Max Heart Rate</span>
-                                            </span>
-                                            <span style={{textAlign: 'center'}}>
-                                                <Avatar component="span" className={classes.purpleAvatar}>70</Avatar>
-                                                <span>Avg. Cadence</span>
-                                            </span>
-                                            <span style={{textAlign: 'center'}}>
-                                                <Avatar component="span" className={classes.purpleAvatar}>100</Avatar>
-                                                <span>Max Cadence</span>
-                                            </span>
-                                        </span>
+                                                  {/*<span style={{display: 'flex', margin: '1rem 0 auto', justifyContent: 'space-around'}}>*/}
+                                                  {/*      <span style={{textAlign: 'center'}}>*/}
+                                                  {/*          <Avatar component="span" className={classes.purpleAvatar}>{workout.ride.duration / 60}</Avatar>*/}
+                                                  {/*          <span>Duration</span>*/}
+                                                  {/*      </span>*/}
+                                                  {/*      <span style={{textAlign: 'center'}}>*/}
+                                                  {/*          <Avatar component="span" className={classes.purpleAvatar}>408</Avatar>*/}
+                                                  {/*          <span>Calories</span>*/}
+                                                  {/*      </span>*/}
+                                                  {/*      <span style={{textAlign: 'center'}}>*/}
+                                                  {/*          <Avatar component="span" className={classes.purpleAvatar}>145</Avatar>*/}
+                                                  {/*          <span>Avg. Heart Rate</span>*/}
+                                                  {/*      </span>*/}
+                                                  {/*      <span style={{textAlign: 'center'}}>*/}
+                                                  {/*          <Avatar component="span" className={classes.purpleAvatar}>155</Avatar>*/}
+                                                  {/*          <span>Max Heart Rate</span>*/}
+                                                  {/*      </span>*/}
+                                                  {/*      <span style={{textAlign: 'center'}}>*/}
+                                                  {/*          <Avatar component="span" className={classes.purpleAvatar}>70</Avatar>*/}
+                                                  {/*          <span>Avg. Cadence</span>*/}
+                                                  {/*      </span>*/}
+                                                  {/*      <span style={{textAlign: 'center'}}>*/}
+                                                  {/*          <Avatar component="span" className={classes.purpleAvatar}>100</Avatar>*/}
+                                                  {/*          <span>Max Cadence</span>*/}
+                                                  {/*      </span>*/}
+                                                  {/*  </span>*/}
                                               </React.Fragment>
                                           }
                             />

@@ -99,6 +99,46 @@ public class UserRepository extends RepositoryBase {
         }
     }
 
+    public void updateUserById(long id, User user) {
+        // check if user with id exists
+        User existingUser = getUserById(id);
+
+        if (user.getPelotonUsername() != null && !user.getPelotonUsername().isBlank()) {
+            existingUser.setPelotonUsername(user.getPelotonUsername());
+        }
+        if (user.getPelotonPassword() != null && !user.getPelotonPassword().isBlank()) {
+            existingUser.setPelotonPassword(user.getPelotonPassword());
+        }
+
+        if (user.getUsername() != null && !user.getUsername().isBlank()) {
+            existingUser.setUsername(user.getUsername());
+        }
+        if (user.getEmail() != null && !user.getEmail().isBlank()) {
+            existingUser.setEmail(user.getEmail());
+        }
+        if (user.getFirstname() != null && !user.getFirstname().isBlank()) {
+            existingUser.setFirstname(user.getFirstname());
+        }
+        if (user.getLastname() != null && !user.getLastname().isBlank()) {
+            existingUser.setLastname(user.getLastname());
+        }
+        if (user.getDob() != null && !user.getDob().isBlank()) {
+            existingUser.setDob(user.getDob());
+        }
+
+        // TODO: password change workflow
+
+
+        try {
+            MapSqlParameterSource params = new MapSqlParameterSource();
+            params.addValue("user", objectMapper.writeValueAsString(existingUser));
+            params.addValue("id", id);
+            namedParameterJdbcTemplate.update(UPDATE_USER_QUERY, params);
+        } catch (JsonProcessingException e) {
+            throw new AppException(e.getMessage(), e);
+        }
+    }
+
     public void deleteUserById(long id) {
         // check if user with id exists
         getUserById(id);
@@ -117,6 +157,7 @@ public class UserRepository extends RepositoryBase {
     private static final String GET_USER_BY_USERNAME_QUERY = "SELECT data FROM users WHERE data->>'username' = :username";
     private static final String USER_EXISTS_BY_USERNAME_QUERY = "SELECT 1 FROM users WHERE data->>'username' = :username";
     private static final String INSERT_USER_QUERY = "INSERT INTO users (data) VALUES (:user::jsonb)";
+    private static final String UPDATE_USER_QUERY = "UPDATE users SET data = (:user::jsonb) WHERE (data->>'id')::bigint = :id";
     private static final String DELETE_USER_BY_ID_QUERY = "DELETE FROM users WHERE (data->>'id')::bigint = :id";
 
     private final RowMapper<User> USER_ROW_MAPPER = (rs, i) -> {

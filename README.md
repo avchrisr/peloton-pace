@@ -57,6 +57,7 @@ consists of following dockerized components:
 
 ## TO DO
 
-* UI design
+* implement a way to store Peloton Username / Password. for now, hard code it in BE ?
+* password needs to be encrypted in DB, and should be decrypted before using to make Peloton requests
 
 -----------
