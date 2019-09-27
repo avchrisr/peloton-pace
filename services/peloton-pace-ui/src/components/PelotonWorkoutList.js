@@ -10,7 +10,7 @@ import { deepOrange, deepPurple } from '@material-ui/core/colors';
 import ExplicitIcon from '@material-ui/icons/Explicit';
 
 import { navigate } from 'hookrouter';
-import _ from "lodash";
+import { PelotonContext } from "./PelotonApp";
 
 const REACT_APP_NGINX_HOSTNAME = process.env.REACT_APP_NGINX_HOSTNAME || 'localhost';
 const REACT_APP_NGINX_PORT = process.env.REACT_APP_NGINX_PORT || '3001';
@@ -88,6 +88,8 @@ const PelotonWorkoutList = (props) => {
     console.log(props);
 
 
+    const { state, dispatch } = useContext( PelotonContext );
+
 
     // TODO: in order to display the metrics on the list page, I need to retrieve the metrics here.... for every workout listed....
     //  maybe i should only display them in the detail page... not on the list page... ?
@@ -95,19 +97,12 @@ const PelotonWorkoutList = (props) => {
 
 
 
-
-
-
-
-
-
-
-
-
     // TODO: retrieve the initial data workout list summary from localStorage (which is fetched in PelotonMain.js), then "more workouts" button to fetch more
     //  or just fetch brand new? to avoid any dependency? I don't think it'd hurt actually
 
-    const pelotonWorkoutOverviewData = JSON.parse(window.localStorage.getItem('pelotonWorkoutOverviewData'));
+
+    // const pelotonWorkoutOverviewData = JSON.parse(window.localStorage.getItem('pelotonWorkoutOverviewData'));
+    const pelotonWorkoutOverviewData = state.pelotonWorkoutOverviewData;
 
     console.log(`------   PelotonWorkoutList  pelotonWorkoutOverviewData   ------`);
     console.log(pelotonWorkoutOverviewData);
@@ -117,23 +112,6 @@ const PelotonWorkoutList = (props) => {
 
         console.log(`-----   workoutlist props CLICK   -----`);
         console.log(clickProps);
-
-
-        // const workoutSummary = _.find(pelotonWorkoutOverviewData.data, (workout) => workout.id === clickProps.workoutId);
-
-        // console.log('----------------   WorkoutList  summary   -----------------');
-        // console.log(workoutSummary);
-
-
-        // TODO: fetch the details data here, and store it in localStorage, then navigate to the details page
-
-        const workoutDetail = {
-            id: clickProps.workout.id,
-            start_time: clickProps.workout.start_time,
-            name: clickProps.workout.name,
-            status: clickProps.workout.status
-        };
-        window.localStorage.setItem(`workoutDetail_${clickProps.workout.id}`, JSON.stringify(workoutDetail));
 
         navigate(`/peloton-workout-detail/${clickProps.workout.id}`);
     };

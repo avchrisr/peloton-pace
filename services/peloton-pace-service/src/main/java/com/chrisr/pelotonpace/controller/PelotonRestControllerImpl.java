@@ -5,13 +5,12 @@ import com.chrisr.pelotonpace.controller.data.PelotonLoginResponse;
 import com.chrisr.pelotonpace.controller.data.PelotonWorkoutDetail;
 import com.chrisr.pelotonpace.controller.data.PelotonWorkoutHistoryItem;
 import com.chrisr.pelotonpace.exception.AppException;
-import com.chrisr.pelotonpace.exception.BadRequestException;
 import com.chrisr.pelotonpace.exception.UserNotFoundException;
 import com.chrisr.pelotonpace.repository.entity.PelotonUserSession;
-import com.chrisr.pelotonpace.request.PelotonRetrieveWorkoutHistoryRequest;
 import com.chrisr.pelotonpace.response.PelotonWorkoutDetailResponse;
 import com.chrisr.pelotonpace.service.PelotonService;
 import com.chrisr.pelotonpace.service.UserService;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,12 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import javax.validation.Valid;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,20 +39,19 @@ public class PelotonRestControllerImpl implements PelotonRestController {
 	private static final String PELOTON_WORKOUT_METRICS_URL = PELOTON_BASE_URL + "/api/workout/:workoutId/performance_graph?every_n=5";
 	private static final String PELOTON_RIDE_DETAIL_URL = PELOTON_BASE_URL + "/api/ride/:rideId/details";
 
+	private static final ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
 	private final PelotonService pelotonService;
 	private final UserService userService;
 	private final RestTemplate restTemplate;
-	private final ObjectMapper objectMapper;
 
     @Autowired
 	PelotonRestControllerImpl(PelotonService pelotonService,
 							  UserService userService,
-							  RestTemplate restTemplate,
-							  ObjectMapper objectMapper) {
+							  RestTemplate restTemplate) {
         this.pelotonService = pelotonService;
         this.userService = userService;
         this.restTemplate = restTemplate;
-        this.objectMapper = objectMapper;
     }
 
 	@Override
@@ -96,7 +92,7 @@ public class PelotonRestControllerImpl implements PelotonRestController {
 		String workoutMetrics = sendRequestToPeloton(url, pelotonUserSession.getSessionId());
 
 		try {
-			pelotonWorkoutDetail = objectMapper.readValue(workoutMetrics, PelotonWorkoutDetail.class);
+			pelotonWorkoutDetail = objectMapper.readValue(workoutDetail, PelotonWorkoutDetail.class);
 		} catch (IOException e) {
 			throw new AppException(e.getMessage(), e);
 		}
@@ -250,6 +246,12 @@ public class PelotonRestControllerImpl implements PelotonRestController {
 	private PelotonUserSession logIntoPelotonAndSaveUserSession(String pelotonPaceUsername) {
     	// look up user profile and get Peloton username / password
 		com.chrisr.pelotonpace.repository.entity.User user = userService.getUserByUsername(pelotonPaceUsername);
+
+		// ensure that Peloton credential exists
+		if (user.getPelotonUsername() == null || user.getPelotonUsername().isBlank() ||
+			user.getPelotonPassword() == null || user.getPelotonPassword().isBlank()) {
+			throw new AppException("Peloton credential not found. Please update user profile with Peloton credential.");
+		}
 
 		// log in and get a new peloton user session
 		PelotonLoginRequest pelotonLoginRequest = new PelotonLoginRequest(user.getPelotonUsername(), user.getPelotonPassword());

@@ -176,12 +176,13 @@ export default function SignUp() {
 
             setData({
                 ...data,
+                isSubmitting: true,
                 responseMessage: `Successfully registered user. Redirecting to the login page...`
             });
 
             setTimeout(() => {
                 window.location.replace('/login');
-            }, 2500);
+            }, 1500);
         }
     };
 

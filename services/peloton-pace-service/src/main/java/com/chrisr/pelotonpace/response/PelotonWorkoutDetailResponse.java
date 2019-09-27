@@ -35,4 +35,13 @@ public class PelotonWorkoutDetailResponse {
     public void setRideDetail(String rideDetail) {
         this.rideDetail = rideDetail;
     }
+
+    @Override
+    public String toString() {
+        return "PelotonWorkoutDetailResponse{" +
+                "workoutDetail='" + workoutDetail + '\'' +
+                ", workoutMetrics='" + workoutMetrics + '\'' +
+                ", rideDetail='" + rideDetail + '\'' +
+                '}';
+    }
 }

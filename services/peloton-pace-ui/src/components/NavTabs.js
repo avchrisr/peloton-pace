@@ -5,6 +5,8 @@ import { navigate, useRoutes } from 'hookrouter';
 
 import { Button, ButtonGroup } from '@material-ui/core';
 
+import _ from 'lodash';
+
 import PhoneIcon from '@material-ui/icons/Phone';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import PersonPinIcon from '@material-ui/icons/PersonPin';
@@ -37,8 +39,6 @@ const NavTabs = (props) => {
 
     const { dispatch } = useContext(AuthContext);
 
-
-
     const isAuthenticated = window.localStorage.getItem('isAuthenticated');
     const userId = window.localStorage.getItem('userId');
     const userFirstname = window.localStorage.getItem('userFirstname');
@@ -47,9 +47,12 @@ const NavTabs = (props) => {
     // console.log(`authenticated = ${authenticated}`);
     // console.log(`authBody = ${authBody}`);
 
-
-    const lastWorkoutDate = new Date(props.pelotonWorkoutOverviewData.data[0].user.last_workout_at * 1000);        // 1568079303000
-    const userCreatedDate = new Date(props.pelotonWorkoutOverviewData.data[0].user.created_at * 1000);
+    let lastWorkoutDate;
+    let userCreatedDate;
+    if (_.has(props, 'pelotonWorkoutOverviewData.data')) {
+        lastWorkoutDate = new Date(props.pelotonWorkoutOverviewData.data[0].user.last_workout_at * 1000);        // 1568079303000
+        userCreatedDate = new Date(props.pelotonWorkoutOverviewData.data[0].user.created_at * 1000);
+    }
 
     console.log('-------   last workout date   -------------');
     console.log(lastWorkoutDate);
@@ -58,7 +61,6 @@ const NavTabs = (props) => {
         dispatch({
             type: ReducerActionTypes.LOGOUT
         });
-
 
         navigate('/', true);
     };
@@ -71,10 +73,6 @@ const NavTabs = (props) => {
                 size="large"
                 variant="outlined"
             >
-                {/* <Button onClick={() => navigate('/user-profile', true)}>User Profile</Button> */}
-                {/* <Button onClick={() => navigate('/peloton-home', true)}>Peloton Home</Button> */}
-                {/* <Button onClick={() => navigate('/peloton-workouts', true)}>Peloton Workouts</Button> */}
-
                 <Button onClick={() => navigate('/')}>Peloton Overview</Button>
                 <Button onClick={() => navigate('/peloton-workouts')}>Peloton Workouts</Button>
                 <Button onClick={() => navigate('/user-profile')}>User Profile</Button>
@@ -82,7 +80,7 @@ const NavTabs = (props) => {
 
             {isAuthenticated === 'true' &&
             <div className={classes.profileBar}>
-                <div style={{lineHeight: '2rem'}}><Button size="large" variant="text">Welcome {userFirstname}!</Button> <span><b>Your last workout:</b> {lastWorkoutDate.toDateString()} | <b>Registered since</b> {userCreatedDate.toLocaleDateString()}</span></div>
+                <div style={{lineHeight: '2rem'}}><Button size="large" variant="text">Welcome {userFirstname}!</Button> <span>{lastWorkoutDate && <span><b>Your last workout:</b> {lastWorkoutDate.toDateString()}</span>} | {userCreatedDate && <span><b>Registered since</b> {userCreatedDate.toLocaleDateString()}</span>}</span></div>
                 <Button onClick={handleLogOut} variant="outlined">Log Out</Button>
             </div>}
         </div>

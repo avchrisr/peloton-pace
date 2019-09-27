@@ -57,7 +57,12 @@ consists of following dockerized components:
 
 ## TO DO
 
-* implement a way to store Peloton Username / Password. for now, hard code it in BE ?
+* user profile page button layout refine
+* update the main home page stats and charts to use real data
+* react context appears lost upon browser refresh. how to keep it stateful? (localStorage?)
+* implement secure password change workflow
 * password needs to be encrypted in DB, and should be decrypted before using to make Peloton requests
+* add class music playlist
+* create a search page with parameters?
 
 -----------

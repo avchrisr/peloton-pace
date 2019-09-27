@@ -146,9 +146,10 @@ const UserProfile = (props) => {
             console.log(JSON.stringify(res.data, null, 4));
 
 
-            res.data.password = '**';
-            res.data.dob = '1990-01-05';
-            res.data.pelotonUsername = 'SpinninChris';
+            res.data.password = '*******';
+            if (_.isNil(res.data.dob)) {
+                res.data.dob = '';
+            }
             res.data.pelotonPassword = '*******';
 
 
@@ -180,7 +181,6 @@ const UserProfile = (props) => {
             });
 
 
-
             // TODO: password changing workflow is different
             // one way hashing does not allow to decode. show some arbitrary masked stars, and accept 'current password' and 'new password'
             // setPassword()
@@ -192,17 +192,6 @@ const UserProfile = (props) => {
         fetchUserInfo();
 
     }, []);
-
-    // useEffect(() => {
-
-    //     console.log('---------  user profile useEffect called  ----------');
-
-    //     if (userId) {
-    //         // fetchUserInfo();
-    //     }
-
-    // }, [userId]);
-
 
     const handleInputValueChange = (event) => {
         setData({
@@ -283,17 +272,32 @@ const UserProfile = (props) => {
         const url = `http://${REACT_APP_NGINX_HOSTNAME}:${REACT_APP_NGINX_PORT}/api/${REACT_APP_API_VERSION}/users/${userId}`;
 
         const requestBody = {};
-        requestBody.email = data.email;
-        requestBody.password = data.password;
-        requestBody.firstname = data.firstname;
-        requestBody.lastname = data.lastname;
-        requestBody.dob = data.dob;
-        requestBody.pelotonUsername = data.pelotonUsername;
-        requestBody.pelotonPassword = data.pelotonPassword;
+        if (data.email !== initialStateData.email) {
+            requestBody.email = data.email;
+        }
+
+        // TODO: password change workflow
+        // requestBody.password = data.password;
+
+        if (data.firstname !== initialStateData.firstname) {
+            requestBody.firstname = data.firstname;
+        }
+        if (data.lastname !== initialStateData.lastname) {
+            requestBody.lastname = data.lastname;
+        }
+        if (data.dob !== initialStateData.dob) {
+            requestBody.dob = data.dob;
+        }
+        if (data.pelotonUsername !== initialStateData.pelotonUsername) {
+            requestBody.pelotonUsername = data.pelotonUsername;
+        }
+        if (data.pelotonPassword !== initialStateData.pelotonPassword) {
+            requestBody.pelotonPassword = data.pelotonPassword;
+        }
 
         const options = {
             url,
-            method: 'POST',
+            method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + jwt
@@ -334,7 +338,8 @@ const UserProfile = (props) => {
             setData({
                 ...data,
                 responseMessage: res.data.message,
-                isSubmitting: false
+                isSubmitting: false,
+                errorMessages: []
             });
         }
     };
@@ -367,99 +372,102 @@ const UserProfile = (props) => {
             <div className={classes.root}>
                 {/* firstname, lastname, email, password, dob, peloton_username, peloton_password */}
 
-                <div className={classes.container}>
-                    <div>
-                        <TextField
-                            label="Email"
-                            helperText="Email to log into Peloton Pace"
-                            value={data.email}
-                            name="email"
-                            onChange={handleInputValueChange}
-                            margin="normal"
-                            required
-                        />
+                <form>
+                    <div className={classes.container}>
+                        <div>
+                            <TextField
+                                label="Email"
+                                helperText="Email to log into Peloton Pace"
+                                value={data.email}
+                                name="email"
+                                onChange={handleInputValueChange}
+                                margin="normal"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <TextField
+                                label="DOB"
+                                value={data.dob}
+                                name="dob"
+                                onChange={handleInputValueChange}
+                                margin="normal"
+                            />
+                        </div>
+                        <div>
+                            <TextField
+                                label="Password"
+                                helperText="Password to log into Peloton Pace"
+                                value={data.password}
+                                name="password"
+                                onChange={handleInputValueChange}
+                                margin="normal"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <TextField
+                                label="Peloton Username"
+                                helperText="Your Peloton Digital username"
+                                value={data.pelotonUsername}
+                                name="pelotonUsername"
+                                onChange={handleInputValueChange}
+                                margin="normal"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <TextField
+                                label="Firstname"
+                                value={data.firstname}
+                                name="firstname"
+                                onChange={handleInputValueChange}
+                                margin="normal"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <TextField
+                                label="Peloton Password"
+                                helperText="Your Peloton Digital password"
+                                value={data.pelotonPassword}
+                                name="pelotonPassword"
+                                onChange={handleInputValueChange}
+                                margin="normal"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <TextField
+                                label="Lastname"
+                                value={data.lastname}
+                                name="lastname"
+                                onChange={handleInputValueChange}
+                                margin="normal"
+                                required
+                            />
+                        </div>
                     </div>
-                    <div>
-                        <TextField
-                            label="DOB"
-                            value={data.dob}
-                            name="dob"
-                            onChange={handleInputValueChange}
-                            margin="normal"
-                        />
-                    </div>
-                    <div>
-                        <TextField
-                            label="Password"
-                            helperText="Password to log into Peloton Pace"
-                            value={data.password}
-                            name="password"
-                            onChange={handleInputValueChange}
-                            margin="normal"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <TextField
-                            label="Peloton Username"
-                            helperText="Your Peloton Digital username"
-                            value={data.pelotonUsername}
-                            name="pelotonUsername"
-                            onChange={handleInputValueChange}
-                            margin="normal"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <TextField
-                            label="Firstname"
-                            value={data.firstname}
-                            name="firstname"
-                            onChange={handleInputValueChange}
-                            margin="normal"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <TextField
-                            label="Peloton Password"
-                            helperText="Your Peloton Digital password"
-                            value={data.pelotonPassword}
-                            name="pelotonPassword"
-                            onChange={handleInputValueChange}
-                            margin="normal"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <TextField
-                            label="Lastname"
-                            value={data.lastname}
-                            name="lastname"
-                            onChange={handleInputValueChange}
-                            margin="normal"
-                            required
-                        />
-                    </div>
-                </div>
 
-                <div className={classes.buttons}>
-                    <Button
-                        color="primary"
-                        variant="contained"
-                        fullWidth={false}
-                        disabled={data.isSubmitting}
-                        onClick={handleSubmit}
-                    >Submit</Button>
+                    <div className={classes.buttons}>
+                        <Button
+                            type="submit"
+                            color="primary"
+                            variant="contained"
+                            fullWidth={false}
+                            disabled={data.isSubmitting}
+                            onClick={handleSubmit}
+                        >Submit</Button>
 
-                    <Button
-                        color="secondary"
-                        variant="contained"
-                        fullWidth={false}
-                        // disabled={isSearchButtonDisabled}
-                        onClick={handleReset}
-                    >Reset</Button>
-                </div>
+                        <Button
+                            color="secondary"
+                            variant="contained"
+                            fullWidth={false}
+                            // disabled={isSearchButtonDisabled}
+                            onClick={handleReset}
+                        >Reset</Button>
+                    </div>
+                </form>
 
                 {data.isSubmitting && <LinearProgress variant="query" />}
 
