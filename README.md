@@ -1,6 +1,6 @@
 # peloton-pace
 
-Peloton Pace is a Peloton Fitness Exercise Tracker Application
+PelotonPace app is a Peloton Fitness Exercise Health Metrics Tracker and Visualizer
 
 consists of following dockerized components:
 
@@ -9,7 +9,10 @@ consists of following dockerized components:
 **peloton-pace-ui**  --  FE layer (React)
 
 **peloton-pace-service**  --  BE service layer (Java Spring Boot)
-
+- auth-service (jwt)
+- user-service
+- peloton-service
+ 
 **postgres**
 
 -----------
@@ -30,8 +33,8 @@ consists of following dockerized components:
 	"username": "user1",
 	"password": "pass1",
 	"firstname": "Bear",
-	"lastname": "Claw",
-	"email": "bclaw@email.com"
+	"lastname": "Green",
+	"email": "bgreen@email.com"
 }
 ```
 
@@ -50,14 +53,15 @@ consists of following dockerized components:
 `http://localhost:3001/api/v1/users/1`
 
 
-### Retrieve Peloton Workout History
-`http://localhost:3001/api/v1/peloton/retrieve-workout-history`
+### Get Peloton Workout History
+`http://localhost:3001/api/v1/peloton/get-workout-summary`
+
+* valid Peloton credential required in user profile prior to accessing Peloton API
 
 -----------
 
 ## TO DO
 
-* user profile page button layout refine
 * "more" button to fetch more workout histories on the list page
 * update the main home page stats and charts to use real data
 * react context appears lost upon browser refresh. how to keep it stateful? (localStorage?)
