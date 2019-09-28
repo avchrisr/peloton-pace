@@ -29,11 +29,11 @@ public class UserServiceTest {
     UserService userService;
 
     private SignUpRequest signUpRequest;
-    private String username = "chrisr";
+    private String username = "user1";
     private String password = "myPassword";
-    private String email = "chrisr@email.com";
-    private String firstname = "Chris";
-    private String lastname = "Ro";
+    private String email = "user1@email.com";
+    private String firstname = "Bear";
+    private String lastname = "Green";
 
     @Before
     public void createSignUpRequest() {

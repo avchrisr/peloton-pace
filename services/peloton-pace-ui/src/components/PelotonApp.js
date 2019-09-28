@@ -100,11 +100,7 @@ const useStyles = makeStyles({
 const routes = {
     // '/': () => <PelotonApp />,
     '/user-profile': () => <UserProfile />,
-    // '/': () => <PelotonMain />,
-    // '/peloton-main': () => <PelotonMain />,
-    // '/peloton-workouts': () => <PelotonWorkouts />,
     '/peloton-workouts': () => <PelotonWorkoutList />,
-    // '/peloton-workout-list/:month': ({month}) => <PelotonWorkoutList month={month} />,
     '/peloton-workout-detail/:workoutId': ({workoutId}) => <PelotonWorkoutDetail workoutId={workoutId} />
 };
 

@@ -58,6 +58,7 @@ consists of following dockerized components:
 ## TO DO
 
 * user profile page button layout refine
+* "more" button to fetch more workout histories on the list page
 * update the main home page stats and charts to use real data
 * react context appears lost upon browser refresh. how to keep it stateful? (localStorage?)
 * implement secure password change workflow

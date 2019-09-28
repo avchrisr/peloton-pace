@@ -90,18 +90,6 @@ const PelotonWorkoutList = (props) => {
 
     const { state, dispatch } = useContext( PelotonContext );
 
-
-    // TODO: in order to display the metrics on the list page, I need to retrieve the metrics here.... for every workout listed....
-    //  maybe i should only display them in the detail page... not on the list page... ?
-    //  <--  this. remove metrics details from the list page
-
-
-
-    // TODO: retrieve the initial data workout list summary from localStorage (which is fetched in PelotonMain.js), then "more workouts" button to fetch more
-    //  or just fetch brand new? to avoid any dependency? I don't think it'd hurt actually
-
-
-    // const pelotonWorkoutOverviewData = JSON.parse(window.localStorage.getItem('pelotonWorkoutOverviewData'));
     const pelotonWorkoutOverviewData = state.pelotonWorkoutOverviewData;
 
     console.log(`------   PelotonWorkoutList  pelotonWorkoutOverviewData   ------`);
@@ -125,7 +113,6 @@ const PelotonWorkoutList = (props) => {
                     const workoutId = workout.id;
                     const rideId = workout.ride.id;
                     const instructorName = workout.ride.instructor.name;
-                    const explicitClass = workout.ride.is_explicit ? '(explicit)' : '';
                     const workoutStartDate = new Date(workout.start_time * 1000);
                     const workoutStartDateString = `${workoutStartDate.toDateString()} @ ${workoutStartDate.toLocaleTimeString()}`;
 

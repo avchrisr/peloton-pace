@@ -178,12 +178,6 @@ const SignIn = (props) => {
             console.log(`-------------  res.data  ---------------`);
             console.log(JSON.stringify(res.data, null, 4));
 
-            /*
-            {
-                "jwt": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnYmVhckBlbWFpbC5jb20iLCJpYXQiOjE1Njg0OTQ0MDcsImV4cCI6MTU2OTA5OTIwN30.GdTamSSsmrLNt8Qggv-bk1iVk_Jglqwua3WnWMu2kZ7iCGuqrZP0qRCb2YDS1-50jHvxaLg3MOVoCyWRd_VGVQ"
-            }
-            */
-
             const base64Url = res.data.jwt.split('.')[0]; // 0: header  1: payload
             const base64 = base64Url.replace('-', '+').replace('_', '/');
             const jwtHeader = JSON.parse(Buffer.from(base64, 'base64').toString('UTF-8'));
@@ -198,20 +192,6 @@ const SignIn = (props) => {
                 type: ReducerActionTypes.LOGIN,
                 payload: res.data
             });
-
-
-
-
-            // // props.setUserId(`${jwtHeader.userId}`);
-            // props.setUserId(jwtHeader.userId + '');
-            //
-            //
-            // // TODO: store JWT in local storage, and implement Refresh Token workflow
-            //
-            // props.setAuthenticated('true');
-            // props.setAuthBody(JSON.stringify(res.data));
-
-
 
             navigate('/');
         }

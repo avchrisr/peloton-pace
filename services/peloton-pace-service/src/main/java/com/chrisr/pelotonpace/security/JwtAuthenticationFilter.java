@@ -29,10 +29,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws IOException, ServletException {
-
-		// TODO: Q) the fact that it got here, means it's already expecting JWT after successful login ??? If so, throw exception if Bearer token header is missing
-		// confirmed -- it comes down here NO MATTER WHAT even if the endpoint is permitted to all
-
 		try {
 			String jwt = getJwtFromRequest(httpServletRequest);
 

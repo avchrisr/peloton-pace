@@ -27,7 +27,7 @@ const useStyles = makeStyles({
         // alignItems: 'center',
         // flexWrap: 'wrap',
 
-        margin: '2rem',
+        margin: '2rem auto',
 
         // width: '800px',
         // border: '2px solid blue',
@@ -45,16 +45,16 @@ const useStyles = makeStyles({
         margin: '2rem auto',
 
 
-        border: '1px solid blue'
+        // border: '1px solid blue'
     },
     buttons: {
         display: 'grid',
         gridTemplateColumns: '100px 100px',
         gridGap: '1rem',
-        marginTop: '2rem'
+        // margin: '2rem auto'
         // gridTemplateColumns: 'minmax(1fr, auto) minmax(1fr, auto)',
     },
-    errorMessagesContainer: {
+    messagesContainer: {
         display: 'grid',
         gridTemplateColumns: '1fr',
         gridRowGap: '10px',
@@ -262,13 +262,6 @@ const UserProfile = (props) => {
             errorMessages: []
         });
 
-
-        // setTimeout(() => {
-        //     handleReset();
-        // }, 4000);
-
-
-
         const url = `http://${REACT_APP_NGINX_HOSTNAME}:${REACT_APP_NGINX_PORT}/api/${REACT_APP_API_VERSION}/users/${userId}`;
 
         const requestBody = {};
@@ -472,14 +465,14 @@ const UserProfile = (props) => {
                 {data.isSubmitting && <LinearProgress variant="query" />}
 
                 {/*<div className={classes.errorMessage}>{errorMessages.map((errorMessage) => (<div>{errorMessage}</div>))}</div>*/}
-                {data.errorMessages.length > 0 && <div className={classes.errorMessagesContainer}>{data.errorMessages.map((errorMessage, index) => (<SnackbarContent
+                {data.errorMessages.length > 0 && <div className={classes.messagesContainer}>{data.errorMessages.map((errorMessage, index) => (<SnackbarContent
                     className={classes.errorMessage}
                     message={errorMessage}
                     key={index}
                 />))}</div>}
 
                 {data.responseMessage.length > 0 && <SnackbarContent
-                    className={classes.snackbar}
+                    className={classes.messagesContainer}
                     message={data.responseMessage}
                 />}
 

@@ -1,7 +1,6 @@
 package com.chrisr.pelotonpace.controller;
 
 import com.chrisr.pelotonpace.controller.data.PelotonWorkoutHistoryItem;
-import com.chrisr.pelotonpace.exception.BadRequestException;
 import com.chrisr.pelotonpace.repository.entity.PelotonUserSession;
 import com.chrisr.pelotonpace.request.PelotonRetrieveWorkoutHistoryRequest;
 import com.chrisr.pelotonpace.service.PelotonService;
@@ -12,9 +11,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -22,6 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+@Ignore
 @RunWith(MockitoJUnitRunner.class)
 public class PelotonRestControllerTest {
 
@@ -31,19 +34,40 @@ public class PelotonRestControllerTest {
     @Mock
     RestTemplate restTemplate;
 
+    @Mock
+    SecurityContextHolder securityContextHolder;
+
     @InjectMocks
     PelotonRestControllerImpl pelotonRestController;
 
 
-    // TODO: update tests
-    @Ignore
-    @Test(expected = BadRequestException.class)
-    public void shouldFailWhenToUsernameIsMissing() {
-        PelotonRetrieveWorkoutHistoryRequest request = new PelotonRetrieveWorkoutHistoryRequest();
-//        ResponseEntity<List<PelotonWorkoutHistoryItem>> responseEntity = pelotonRestController.retrieveWorkoutHistory(request);
+    @Test
+    public void getWorkoutSummary_emptyParameters_ShouldSucceed() {
+        String mockResponse = "this is mock response.";
+
+        when(restTemplate.exchange(anyString(), any(), any(), any(Class.class))).thenReturn(ResponseEntity.ok().body(mockResponse));
+
+        User userPrincipal = new User("user1", "pass1", Collections.emptyList());
+
+        // set up mocks
+
+        PelotonUserSession pelotonUserSession = new PelotonUserSession();
+        pelotonUserSession.setUserId("user-id-1");
+        pelotonUserSession.setSessionId("peloton_session_id");
+        when(pelotonService.getPelotonUserSessionByUsername(anyString())).thenReturn(pelotonUserSession);
+
+        ResponseEntity<String> responseEntity = pelotonRestController.getWorkoutSummary("", "");
+        assertEquals(mockResponse, responseEntity.getBody());
     }
 
-    @Ignore
+    @Test
+    public void getWorkoutSummary_nullParameters_ShouldSucceed() {
+        String mockResponse = "this is mock response.";
+        when(restTemplate.exchange(anyString(), any(), any(), any(Class.class))).thenReturn(ResponseEntity.ok().body(mockResponse));
+        ResponseEntity<String> responseEntity = pelotonRestController.getWorkoutSummary(null, null);
+        assertEquals(mockResponse, responseEntity.getBody());
+    }
+
     @Test
     public void shouldSucceed() {
 

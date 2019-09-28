@@ -128,17 +128,11 @@ const PelotonWorkoutDetail = (props) => {
         });
 
 
-
         setCadenceMetrics(cadenceMetrics);
         setHeartRateMetrics(heartRateMetrics);
         setCaloriesSummary(caloriesSummary);
         setCadenceMetricsData(cadenceMetricsData);
         setHeartRateMetricsData(heartRateMetricsData);
-
-
-        // console.log(cadenceMetricsData);
-        // console.log(JSON.stringify(cadenceMetricsData));
-        // console.log(JSON.stringify(heartRateMetricsData));
 
 
         setTimeout(() => {
@@ -302,8 +296,8 @@ const PelotonWorkoutDetail = (props) => {
                     domainPadding={{ x: 0, y: [0, 40] }}
                     // scale={{ x: "linear" }}
                     animate={{
-                        duration: 1000,
-                        onLoad: { duration: 1000 }
+                        duration: 900,
+                        onLoad: { duration: 900 }
                     }}
                     // style={{
                     //     data: {
@@ -385,8 +379,8 @@ const PelotonWorkoutDetail = (props) => {
                     domainPadding={{ x: 0, y: [0, 40] }}
                     // scale={{ x: "linear" }}
                     animate={{
-                        duration: 1000,
-                        onLoad: { duration: 1000 }
+                        duration: 900,
+                        onLoad: { duration: 900 }
                     }}
                     // style={{
                     //     data: {
