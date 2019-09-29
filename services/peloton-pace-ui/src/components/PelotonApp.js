@@ -275,7 +275,7 @@ const PelotonApp = (props) => {
                     />
 
                     {window.location.pathname === '/' && _.has(state, 'pelotonWorkoutOverviewData.data') && <PelotonMain pelotonWorkoutOverviewData={state.pelotonWorkoutOverviewData} />}
-                    {window.location.pathname !== '/' && routeResult || <div>404 NOT FOUND</div>}
+                    {window.location.pathname !== '/' && routeResult}
 
                     {data.errorMessages.length > 0 && <div className={classes.errorMessagesContainer}>{data.errorMessages.map((errorMessage, index) => (<SnackbarContent
                         className={classes.errorMessage}

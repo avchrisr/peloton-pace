@@ -2,7 +2,39 @@
 
 PelotonPace app is a Peloton Fitness Exercise Health Metrics Tracker and Visualizer
 
-It is designed in Microservices architecture, and consists of following dockerized components:
+## screenshots
+
+#### main page upon successful login
+
+[![Peloton-Pace-01-main-page.png](https://i.postimg.cc/0NfhXpGr/Peloton-Pace-01-main-page.png)](https://postimg.cc/bGZ6sSBj)
+
+-----
+
+#### user profile page
+
+[![Peloton-Pace-02-User-Profile-Page.png](https://i.postimg.cc/vB5xdZB1/Peloton-Pace-02-User-Profile-Page.png)](https://postimg.cc/R6VZ79w9)
+
+-----
+
+#### workouts history page
+
+[![Peloton-Pace-03-Workout-List-Page.png](https://i.postimg.cc/CLcB0tF4/Peloton-Pace-03-Workout-List-Page.png)](https://postimg.cc/WhJb65qD)
+
+-----
+
+#### workout details page with metrics
+
+[![Peloton-Pace-04-Workout-Details-Page.png](https://i.postimg.cc/90JMWRjf/Peloton-Pace-04-Workout-Details-Page.png)](https://postimg.cc/V001gNvy)
+
+-----
+
+* UI design still under development and is subject to change
+
+-----------
+
+## System Architecture
+
+PelotonPace is designed in Microservices architecture, and consists of following dockerized components:
 
 - peloton-pace-ui (frontend)
 - nginx
@@ -18,7 +50,7 @@ It is designed in Microservices architecture, and consists of following dockeriz
 - Frontend UI written in React
 
 **nginx**
-- single point of entry, which load balances web traffic to "**api-gateway-zuul-server**"
+- single point of entry into Backend, which load balances web traffic to "**api-gateway-zuul-server**"
 - update "**nginx-conf**" if you wish to change the initial setting of 3 api-gateway-zuul-server instances
 
 **config-server**
@@ -32,26 +64,28 @@ It is designed in Microservices architecture, and consists of following dockeriz
 - auth-service (JWT) is built into the api-gateway
 
 **peloton-pace-service**
-- handles all things related to Peloton data such as querying the external Peloton API
+- handles all things related to Peloton data such as querying the external Peloton API and aggregating Peloton workout history and metrics
 
 **user-service**
 - handles all things related to users such as user profiles data
 
 **postgres**
-- Backend datastore. In true ideal microservices, each microservice would have its own datastore, but it is an overkill for PelotonPace app, thus opting for a monolith database shared by all microservices
+- Backend datastore. In true ideal microservices architecture, each microservice would have its own datastore; however, it is an overkill for PelotonPace app, thus opting for a monolith database shared by all microservices
 
 -----------
 
-## Architecture diagram coming soon...
+## Architecture diagram
+
+coming soon...
 
 
-## Usage
+## usage
 
-### Build
+### build
 
 `docker-compose up --build --scale api-gateway-zuul-server=3 --scale peloton-pace-service=3 --scale user-service=3`
 
-### UI access on browsers
+### UI access on local browsers
 
 `http://localhost:19999`
 
@@ -61,7 +95,7 @@ It is designed in Microservices architecture, and consists of following dockeriz
 ### check Eureka (Service Registry) on registered microservices
 `http://localhost:20002/eureka-server`
 
-### Register User
+### register user
 `POST http://localhost:19999/api/v1/auth/register`
 ```
 {
@@ -73,7 +107,7 @@ It is designed in Microservices architecture, and consists of following dockeriz
 }
 ```
 
-### Login
+### login
 `http://localhost:19999/api/v1/auth/login`
 ```
 {
@@ -82,13 +116,13 @@ It is designed in Microservices architecture, and consists of following dockeriz
 }
 ```
 
-### Get Users
+### get users
 `http://localhost:19999/api/v1/user-dashboard/user-service/users`
 
 `http://localhost:19999/api/v1/user-dashboard/user-service/users/1`
 
 
-### Get Peloton Workout History
+### get peloton workout history
 `http://localhost:19999/api/v1/peloton/get-workout-summary`
 
 * valid Peloton credential required in user profile prior to accessing Peloton API
@@ -109,10 +143,11 @@ It is designed in Microservices architecture, and consists of following dockeriz
 
 * "more" button to fetch more workout histories on the list page
 * update the main home page stats and charts to use real data
-* react context appears lost upon browser refresh. how to keep it stateful? (localStorage?)
+* react context appears lost upon browser refresh. implement caching (localStorage?)
 * implement secure password change workflow
 * password needs to be encrypted in DB, and should be decrypted before using to make Peloton requests
 * add class music playlist
+* improve UI design layout
 * create a search page with parameters?
 
 -----------
