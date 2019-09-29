@@ -5,6 +5,7 @@ import com.chrisr.pelotonpace.controller.data.PelotonLoginResponse;
 import com.chrisr.pelotonpace.controller.data.PelotonWorkoutDetail;
 import com.chrisr.pelotonpace.controller.data.PelotonWorkoutHistoryItem;
 import com.chrisr.pelotonpace.exception.AppException;
+import com.chrisr.pelotonpace.exception.BadRequestException;
 import com.chrisr.pelotonpace.exception.UserNotFoundException;
 import com.chrisr.pelotonpace.repository.entity.PelotonUserSession;
 import com.chrisr.pelotonpace.response.PelotonWorkoutDetailResponse;
@@ -16,8 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -55,8 +54,11 @@ public class PelotonRestControllerImpl implements PelotonRestController {
     }
 
 	@Override
-	public ResponseEntity<String> getWorkoutSummary(String limit, String page) {
+	public ResponseEntity<String> getWorkoutSummary(String pelotonPaceUsername, String limit, String page) {
 
+    	if (pelotonPaceUsername == null || pelotonPaceUsername.isBlank()) {
+    		throw new BadRequestException("PelotonPaceUsername is required.");
+		}
     	if (limit == null || limit.isBlank()) {
     		limit = "10";
 		}
@@ -64,7 +66,7 @@ public class PelotonRestControllerImpl implements PelotonRestController {
     		page = "0";
 		}
 
-		PelotonUserSession pelotonUserSession = getPelotonUserSession();
+		PelotonUserSession pelotonUserSession = getPelotonUserSession(pelotonPaceUsername);
 
     	String url = PELOTON_WORKOUT_SUMMARY_URL
 				.replace(":userId", pelotonUserSession.getUserId())
@@ -76,10 +78,15 @@ public class PelotonRestControllerImpl implements PelotonRestController {
 	}
 
 	@Override
-	public ResponseEntity<PelotonWorkoutDetailResponse> getWorkoutDetail(String workoutId) {
+	public ResponseEntity<PelotonWorkoutDetailResponse> getWorkoutDetail(String workoutId, String pelotonPaceUsername) {
+
+		if (pelotonPaceUsername == null || pelotonPaceUsername.isBlank()) {
+			throw new BadRequestException("PelotonPaceUsername is required.");
+		}
+
 		PelotonWorkoutDetail pelotonWorkoutDetail;
 
-		PelotonUserSession pelotonUserSession = getPelotonUserSession();
+		PelotonUserSession pelotonUserSession = getPelotonUserSession(pelotonPaceUsername);
 
     	String url = PELOTON_WORKOUT_DETAIL_URL.replace(":workoutId", workoutId);
 		System.out.println("Workout Detail URL = " + url);
@@ -263,8 +270,7 @@ public class PelotonRestControllerImpl implements PelotonRestController {
 		pelotonUserSession.setUserId(pelotonLoginResponse.getUserId());
 		pelotonUserSession.setUsername(pelotonLoginRequest.getUsername_or_email());
 
-		User userPrincipal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		pelotonUserSession.setPelotonPaceUsername(userPrincipal.getUsername());
+		pelotonUserSession.setPelotonPaceUsername(pelotonPaceUsername);
 
 		pelotonService.addPelotonUserSession(pelotonUserSession);
 		return pelotonUserSession;
@@ -289,9 +295,7 @@ public class PelotonRestControllerImpl implements PelotonRestController {
 		}
 	}
 
-	private PelotonUserSession getPelotonUserSession() {
-		User userPrincipal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		String pelotonPaceUsername = userPrincipal.getUsername();
+	private PelotonUserSession getPelotonUserSession(String pelotonPaceUsername) {
 		PelotonUserSession pelotonUserSession = pelotonService.getPelotonUserSessionByUsername(pelotonPaceUsername);
 		if (pelotonUserSession == null) {
 			pelotonUserSession = logIntoPelotonAndSaveUserSession(pelotonPaceUsername);

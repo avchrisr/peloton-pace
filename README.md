@@ -42,13 +42,18 @@ It is designed in Microservices architecture, and consists of following dockeriz
 
 -----------
 
-### Architecture diagram coming soon...
+## Architecture diagram coming soon...
 
 
-### Usage
+## Usage
+
+### Build
 
 `docker-compose up --build --scale api-gateway-zuul-server=3 --scale peloton-pace-service=3 --scale user-service=3`
 
+### UI access on browsers
+
+`http://localhost:19999`
 
 ### check global config settings
 `http://localhost:20001/config-server/config/default`
@@ -78,9 +83,9 @@ It is designed in Microservices architecture, and consists of following dockeriz
 ```
 
 ### Get Users
-`http://localhost:19999/api/v1/users/`
+`http://localhost:19999/api/v1/user-dashboard/user-service/users`
 
-`http://localhost:19999/api/v1/users/1`
+`http://localhost:19999/api/v1/user-dashboard/user-service/users/1`
 
 
 ### Get Peloton Workout History
@@ -89,6 +94,16 @@ It is designed in Microservices architecture, and consists of following dockeriz
 * valid Peloton credential required in user profile prior to accessing Peloton API
 
 -----------
+
+## Lesson Learned
+
+- CORS should only be enabled on the front door (API-Gateway). If underlying services have CORS enabled, it will cause conflicts and browser requests will throw CORS error
+- Similarly, JWT Auth should only be done on the front door (API-Gateway / Auth-Service)
+- Feign CANNOT propagate errors from underlying microservices to the surface level if the microservice returns an error response. Feign can only catch the status code, but not the message. AND you must implement Custom Feign Error Decoder to handle it properly.
+- Do not create ambiguous endpoints with the same number of path variables
+    - "GET users/{id}" and "GET users/{username}" will compile and server will start, but you'll get a runtime error if you send a request to either endpoint
+- periodically clean up unused docker volumes to avoid seemingly random build failures!
+    - "docker volume prune"
 
 ## TO DO
 

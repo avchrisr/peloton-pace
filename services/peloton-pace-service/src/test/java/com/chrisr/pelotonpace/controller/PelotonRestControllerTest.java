@@ -1,6 +1,7 @@
 package com.chrisr.pelotonpace.controller;
 
 import com.chrisr.pelotonpace.controller.data.PelotonWorkoutHistoryItem;
+import com.chrisr.pelotonpace.exception.BadRequestException;
 import com.chrisr.pelotonpace.repository.entity.PelotonUserSession;
 import com.chrisr.pelotonpace.request.PelotonRetrieveWorkoutHistoryRequest;
 import com.chrisr.pelotonpace.service.PelotonService;
@@ -41,6 +42,16 @@ public class PelotonRestControllerTest {
     PelotonRestControllerImpl pelotonRestController;
 
 
+    @Test(expected = BadRequestException.class)
+    public void getWorkoutSummary_missingUsername_ShouldThrowBadRequestException() {
+        ResponseEntity<String> responseEntity = pelotonRestController.getWorkoutSummary(null, null, null);
+    }
+
+    @Test(expected = BadRequestException.class)
+    public void getWorkoutSummary_blankUsername_ShouldThrowBadRequestException() {
+        ResponseEntity<String> responseEntity = pelotonRestController.getWorkoutSummary("", null, null);
+    }
+
     @Test
     public void getWorkoutSummary_emptyParameters_ShouldSucceed() {
         String mockResponse = "this is mock response.";
@@ -56,7 +67,7 @@ public class PelotonRestControllerTest {
         pelotonUserSession.setSessionId("peloton_session_id");
         when(pelotonService.getPelotonUserSessionByUsername(anyString())).thenReturn(pelotonUserSession);
 
-        ResponseEntity<String> responseEntity = pelotonRestController.getWorkoutSummary("", "");
+        ResponseEntity<String> responseEntity = pelotonRestController.getWorkoutSummary("user1", "", "");
         assertEquals(mockResponse, responseEntity.getBody());
     }
 
@@ -64,7 +75,7 @@ public class PelotonRestControllerTest {
     public void getWorkoutSummary_nullParameters_ShouldSucceed() {
         String mockResponse = "this is mock response.";
         when(restTemplate.exchange(anyString(), any(), any(), any(Class.class))).thenReturn(ResponseEntity.ok().body(mockResponse));
-        ResponseEntity<String> responseEntity = pelotonRestController.getWorkoutSummary(null, null);
+        ResponseEntity<String> responseEntity = pelotonRestController.getWorkoutSummary("user1", null, null);
         assertEquals(mockResponse, responseEntity.getBody());
     }
 

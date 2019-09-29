@@ -16,6 +16,8 @@ export const ReducerActionTypes = {
 const initialState = {
     isAuthenticated: false,
     userId: null,
+    username: null,
+    userFirstname: null,
     jwt: null
 };
 
@@ -24,6 +26,7 @@ const reducer = (state, action) => {
         case ReducerActionTypes.LOGIN:
             window.localStorage.setItem('isAuthenticated', 'true');
             window.localStorage.setItem('userId', action.payload.userId);
+            window.localStorage.setItem('username', action.payload.username);
             window.localStorage.setItem('userFirstname', action.payload.userFirstname);
             window.localStorage.setItem('jwt', action.payload.jwt);
 
@@ -31,6 +34,7 @@ const reducer = (state, action) => {
                 ...state,
                 isAuthenticated: true,
                 userId: action.payload.userId,
+                username: action.payload.username,
                 userFirstname: action.payload.userFirstname,
                 jwt: action.payload.jwt
             };
@@ -40,6 +44,7 @@ const reducer = (state, action) => {
                 ...state,
                 isAuthenticated: false,
                 userId: null,
+                username: null,
                 userFirstname: null,
                 jwt: null
             };

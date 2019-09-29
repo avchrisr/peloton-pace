@@ -13,7 +13,7 @@ import { navigate } from 'hookrouter';
 import { PelotonContext } from "./PelotonApp";
 
 const REACT_APP_NGINX_HOSTNAME = process.env.REACT_APP_NGINX_HOSTNAME || 'localhost';
-const REACT_APP_NGINX_PORT = process.env.REACT_APP_NGINX_PORT || '3001';
+const REACT_APP_NGINX_PORT = process.env.REACT_APP_NGINX_PORT || '19999';
 const REACT_APP_API_VERSION = process.env.REACT_APP_API_VERSION || 'v1';
 
 const useStyles = makeStyles(theme => ({

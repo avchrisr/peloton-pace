@@ -19,15 +19,15 @@ services:
     #   - peloton-pace-service
     environment:
       - REACT_APP_MY_CUSTOM_ENV_VAR1=my-custom-env-var1
-      - REACT_APP_NGINX_HOSTNAME=${NGINX_HOSTNAME}
-      - REACT_APP_NGINX_PORT=${NGINX_PORT}
+      - REACT_APP_NGINX_HOSTNAME=${UI_NGINX_HOSTNAME}
+      - REACT_APP_NGINX_PORT=${UI_NGINX_PORT}
       - REACT_APP_API_VERSION=${SERVICE_API_VERSION}
 
   nginx:
     container_name: peloton-pace-nginx
     image: nginx:alpine
     ports:                # FE requests should go to NGINX. e.g) localhost:3001, which will then be re-routed. this is REVERSE-PROXY
-      - ${LOCALHOST_PORT_FWD_NGINX_PORT}:80
+      - ${UI_NGINX_PORT}:80
     volumes:
       - './public:/srv/www/static'
       - './devops/config/nginx/nginx.conf:/etc/nginx/nginx.conf'             # where http configs are done, including load balancing

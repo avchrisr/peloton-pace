@@ -33,34 +33,29 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 // don't authenticate requests from following URL patterns. (i.e. allow anonymous resource requests)
                 .authorizeRequests()
-                // allow ALL urls
+//                // allow ALL urls
 				.antMatchers("/**").permitAll()
-//				.antMatchers("/templates/**").permitAll()
-//				.antMatchers("/peloton/**").permitAll()
-                .antMatchers(
-//				        HttpMethod.GET,
-                        "/",
-                        "/favicon.ico",
-                        "/**/*.png",
-                        "/**/*.gif",
-                        "/**/*.svg",
-                        "/**/*.jpg",
-                        "/**/*.html",
-                        "/**/*.css",
-                        "/**/*.js").permitAll()
-                .antMatchers("/auth/**").permitAll()
-                .antMatchers("/public/**").permitAll()
-                .antMatchers("/actuator/**").permitAll()
-                .antMatchers("/users/**").permitAll()
-//				.antMatchers("/user/checkUsernameAvailability", "/user/checkEmailAvailability").permitAll()
-//				.antMatchers(HttpMethod.GET, "/polls/**", "/users/**").permitAll()
-
-                // all other requests need to be authenticated
-
-                // TODO: remove auth from domain layer services
-
-
-//                .anyRequest().authenticated()
+////				.antMatchers("/templates/**").permitAll()
+////				.antMatchers("/peloton/**").permitAll()
+//                .antMatchers(
+////				        HttpMethod.GET,
+//                        "/",
+//                        "/favicon.ico",
+//                        "/**/*.png",
+//                        "/**/*.gif",
+//                        "/**/*.svg",
+//                        "/**/*.jpg",
+//                        "/**/*.html",
+//                        "/**/*.css",
+//                        "/**/*.js").permitAll()
+//                .antMatchers("/auth/**").permitAll()
+//                .antMatchers("/public/**").permitAll()
+//                .antMatchers("/actuator/**").permitAll()
+//                .antMatchers("/users/**").permitAll()
+////				.antMatchers("/user/checkUsernameAvailability", "/user/checkEmailAvailability").permitAll()
+////				.antMatchers(HttpMethod.GET, "/polls/**", "/users/**").permitAll()
+//
+////                .anyRequest().authenticated()
                 .and()
 
                 // unauthorized handler

@@ -24,8 +24,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        System.out.println("ZUUL loadUserByUsername = " + username);
-
         List<User> users = userServiceProxy.findUsers(username, "true").getBody();
 
         if (users == null || users.size() == 0) {

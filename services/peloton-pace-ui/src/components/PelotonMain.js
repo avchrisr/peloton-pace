@@ -15,7 +15,7 @@ import axios from "axios";
 import { PelotonContext, PelotonContextReducerActionTypes } from "./PelotonApp";
 
 const REACT_APP_NGINX_HOSTNAME = process.env.REACT_APP_NGINX_HOSTNAME || 'localhost';
-const REACT_APP_NGINX_PORT = process.env.REACT_APP_NGINX_PORT || '9090';            // 3001
+const REACT_APP_NGINX_PORT = process.env.REACT_APP_NGINX_PORT || '19999';            // 3001
 const REACT_APP_API_VERSION = process.env.REACT_APP_API_VERSION || 'v1';
 
 const useStyles = makeStyles({
@@ -108,12 +108,14 @@ const PelotonMain = (props) => {
 
     const isAuthenticated = window.localStorage.getItem('isAuthenticated');
     const userId = window.localStorage.getItem('userId');
+    const username = window.localStorage.getItem('username');
     const userFirstname = window.localStorage.getItem('userFirstname');
     const jwt = window.localStorage.getItem('jwt');
 
 
     console.log(`PelotonMain isAuthenticated = ${isAuthenticated}`);
     console.log(`PelotonMain userId = ${userId}`);
+    console.log(`PelotonMain username = ${username}`);
     console.log(`PelotonMain userFirstname = ${userFirstname}`);
     console.log(`PelotonMain jwt = ${jwt}`);
 
@@ -186,7 +188,8 @@ const PelotonMain = (props) => {
         // const pelotonSessionId = '176b1e04d8054c70820d8981b613b0e1';
 
         // // call to retrieve the user info
-        const url = `http://${REACT_APP_NGINX_HOSTNAME}:${REACT_APP_NGINX_PORT}/api/${REACT_APP_API_VERSION}/peloton/get-workout-detail/${workoutId}`;  // ?limit=15&page=2
+        const url = `http://${REACT_APP_NGINX_HOSTNAME}:${REACT_APP_NGINX_PORT}/api/${REACT_APP_API_VERSION
+        }/peloton-dashboard/peloton-pace-service/peloton/get-workout-detail/${workoutId}?pelotonPaceUsername=${username}`;  // ?limit=15&page=2
 
         const options = {
             url,

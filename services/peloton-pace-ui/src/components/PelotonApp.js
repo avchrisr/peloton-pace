@@ -15,7 +15,7 @@ import PelotonWorkoutDetail from "./PelotonWorkoutDetail";
 import { navigate, useRoutes } from 'hookrouter';
 
 const REACT_APP_NGINX_HOSTNAME = process.env.REACT_APP_NGINX_HOSTNAME || 'localhost';
-const REACT_APP_NGINX_PORT = process.env.REACT_APP_NGINX_PORT || '3001';
+const REACT_APP_NGINX_PORT = process.env.REACT_APP_NGINX_PORT || '19999';
 const REACT_APP_API_VERSION = process.env.REACT_APP_API_VERSION || 'v1';
 
 const useStyles = makeStyles({
@@ -158,11 +158,13 @@ const PelotonApp = (props) => {
 
     const isAuthenticated = window.localStorage.getItem('isAuthenticated');
     const userId = window.localStorage.getItem('userId');
+    const username = window.localStorage.getItem('username');
     const userFirstname = window.localStorage.getItem('userFirstname');
     const jwt = window.localStorage.getItem('jwt');
 
     console.log(`PelotonApp isAuthenticated = ${isAuthenticated}`);
     console.log(`PelotonApp userId = ${userId}`);
+    console.log(`PelotonApp username = ${username}`);
     console.log(`PelotonApp userFirstname = ${userFirstname}`);
     console.log(`PelotonApp jwt = ${jwt}`);
 
@@ -190,7 +192,8 @@ const PelotonApp = (props) => {
         // const pelotonSessionId = '176b1e04d8054c70820d8981b613b0e1';
 
         // // call to retrieve the user info
-        const url = `http://${REACT_APP_NGINX_HOSTNAME}:${REACT_APP_NGINX_PORT}/api/${REACT_APP_API_VERSION}/peloton/get-workout-summary`;  // ?limit=15&page=2
+        const url = `http://${REACT_APP_NGINX_HOSTNAME}:${REACT_APP_NGINX_PORT}/api/${REACT_APP_API_VERSION
+        }/peloton-dashboard/peloton-pace-service/peloton/get-workout-summary?pelotonPaceUsername=${username}`;  // ?limit=15&page=2
 
         const options = {
             url,

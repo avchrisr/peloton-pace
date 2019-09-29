@@ -38,6 +38,7 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .setHeaderParam("userId", user.getId())
+                .setHeaderParam("username", user.getUsername())
                 .setHeaderParam("userFirstname", user.getFirstname())
                 .setId(UUID.randomUUID().toString())
                 .setSubject(user.getUsername())

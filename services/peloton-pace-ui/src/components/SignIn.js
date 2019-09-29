@@ -23,7 +23,7 @@ import { AuthContext, ReducerActionTypes } from "../App";
 
 const REACT_APP_STATIC_SITE_DEMO_MODE = process.env.REACT_APP_STATIC_SITE_DEMO_MODE || 'false';
 const REACT_APP_NGINX_HOSTNAME = process.env.REACT_APP_NGINX_HOSTNAME || 'localhost';
-const REACT_APP_NGINX_PORT = process.env.REACT_APP_NGINX_PORT || '9090';        // 3001
+const REACT_APP_NGINX_PORT = process.env.REACT_APP_NGINX_PORT || '19999';        // 3001
 const REACT_APP_API_VERSION = process.env.REACT_APP_API_VERSION || 'v1';
 
 const useStyles = makeStyles(theme => ({
@@ -187,6 +187,7 @@ const SignIn = (props) => {
             console.log(jwtHeader);
 
             res.data.userId = jwtHeader.userId;
+            res.data.username = jwtHeader.username;
             res.data.userFirstname = jwtHeader.userFirstname;
 
             dispatch({

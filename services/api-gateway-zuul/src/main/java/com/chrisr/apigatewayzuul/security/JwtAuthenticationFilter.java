@@ -35,10 +35,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
                 String username = jwtTokenProvider.getUsernameFromJWT(jwt);
 
-
-                System.out.println("### ZUUL JWT FILTER INTERNAL username = " + username);
-
-
                 UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(username);
 
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

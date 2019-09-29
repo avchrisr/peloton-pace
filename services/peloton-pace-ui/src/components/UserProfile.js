@@ -11,7 +11,7 @@ import axios from 'axios';
 const isOnlyNumbersRegEx = /^\d+$/;
 
 const REACT_APP_NGINX_HOSTNAME = process.env.REACT_APP_NGINX_HOSTNAME || 'localhost';
-const REACT_APP_NGINX_PORT = process.env.REACT_APP_NGINX_PORT || '9090';                // 3001
+const REACT_APP_NGINX_PORT = process.env.REACT_APP_NGINX_PORT || '19999';                // 3001
 const REACT_APP_API_VERSION = process.env.REACT_APP_API_VERSION || 'v1';
 
 const useStyles = makeStyles({
@@ -104,7 +104,7 @@ const UserProfile = (props) => {
 
     const fetchUserInfo = async () => {
         // call to retrieve the user info
-        const url = `http://${REACT_APP_NGINX_HOSTNAME}:${REACT_APP_NGINX_PORT}/api/${REACT_APP_API_VERSION}/users/${userId}`;
+        const url = `http://${REACT_APP_NGINX_HOSTNAME}:${REACT_APP_NGINX_PORT}/api/${REACT_APP_API_VERSION}/user-dashboard/user-service/users/${userId}`;
 
         const options = {
             url,
@@ -262,7 +262,7 @@ const UserProfile = (props) => {
             errorMessages: []
         });
 
-        const url = `http://${REACT_APP_NGINX_HOSTNAME}:${REACT_APP_NGINX_PORT}/api/${REACT_APP_API_VERSION}/users/${userId}`;
+        const url = `http://${REACT_APP_NGINX_HOSTNAME}:${REACT_APP_NGINX_PORT}/api/${REACT_APP_API_VERSION}/user-dashboard/user-service/users/${userId}`;
 
         const requestBody = {};
         if (data.email !== initialStateData.email) {
