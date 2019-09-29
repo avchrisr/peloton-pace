@@ -2,6 +2,9 @@
 #FROM openjdk:11-jdk
 FROM adoptopenjdk/openjdk11:latest
 VOLUME /tmp
+RUN apt-get update && apt-get -y install netcat && apt-get clean
 ARG JAR_FILE
-COPY ${JAR_FILE} app.jar
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+COPY ${JAR_FILE} peloton-pace-service.jar
+COPY docker-entrypoint-peloton-pace-service.sh /
+RUN chmod 755 docker-entrypoint-peloton-pace-service.sh
+EXPOSE 20004

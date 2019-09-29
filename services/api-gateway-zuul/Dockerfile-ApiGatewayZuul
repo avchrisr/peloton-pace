@@ -1,0 +1,8 @@
+#FROM openjdk:8-jdk-alpine
+#FROM openjdk:11-jdk
+FROM adoptopenjdk/openjdk11:latest
+VOLUME /tmp
+ARG JAR_FILE
+COPY ${JAR_FILE} api-gateway-zuul.jar
+EXPOSE 20000
+ENTRYPOINT ["java", "-jar", "/api-gateway-zuul.jar"]

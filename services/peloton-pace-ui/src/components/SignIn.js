@@ -121,6 +121,8 @@ const SignIn = (props) => {
 
         const url = `http://${REACT_APP_NGINX_HOSTNAME}:${REACT_APP_NGINX_PORT}/api/${REACT_APP_API_VERSION}/auth/login`;
 
+        console.log(`URL = ${url}`);
+
         const requestBody = {
             username: data.email,
             password: data.password
@@ -140,7 +142,6 @@ const SignIn = (props) => {
             // }
         };
 
-        console.log(`URL = ${url}`);
 
         const res = await axios(options).catch(err => {
             console.log(`-------------  AXIOS ERROR  ---------------`);

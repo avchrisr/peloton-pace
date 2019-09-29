@@ -75,4 +75,3 @@ public class PostgresDatabaseConfig {
         return namedParameterJdbcTemplate;
     }
 }
-

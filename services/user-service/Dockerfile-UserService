@@ -1,0 +1,10 @@
+#FROM openjdk:8-jdk-alpine
+#FROM openjdk:11-jdk
+FROM adoptopenjdk/openjdk11:latest
+VOLUME /tmp
+RUN apt-get update && apt-get -y install netcat && apt-get clean
+ARG JAR_FILE
+COPY ${JAR_FILE} user-service.jar
+COPY docker-entrypoint-user-service.sh /
+RUN chmod 755 docker-entrypoint-user-service.sh
+EXPOSE 20003

@@ -11,7 +11,7 @@ services:
     volumes:
       - './services/peloton-pace-ui:/app'
       - '/app/node_modules'
-    # ports:        # not exposing UI port directly, as NGINX will re-direct you to it
+      # ports:        # not exposing UI port directly, as NGINX will re-direct you to it
       # - '3002:3000'
     networks:
       - peloton-pace-frontend
@@ -23,6 +23,101 @@ services:
       - REACT_APP_NGINX_PORT=${NGINX_PORT}
       - REACT_APP_API_VERSION=${SERVICE_API_VERSION}
 
+  nginx:
+    container_name: peloton-pace-nginx
+    image: nginx:alpine
+    ports:                # FE requests should go to NGINX. e.g) localhost:3001, which will then be re-routed. this is REVERSE-PROXY
+      - ${LOCALHOST_PORT_FWD_NGINX_PORT}:80
+    volumes:
+      - './public:/srv/www/static'
+      - './devops/config/nginx/nginx.conf:/etc/nginx/nginx.conf'             # where http configs are done, including load balancing
+      - './devops/config/nginx/default.conf:/etc/nginx/conf.d/default.conf'  # where reverse proxy configs are done
+    networks:
+      - peloton-pace-frontend
+      - peloton-pace-backend
+    depends_on:
+      - peloton-pace-ui
+      - api-gateway-zuul-server     # this is necessary in order to apply nginx load balancing configs to the api-gateway-zuul-server
+#      - peloton-pace-service
+
+  config-server:
+    container_name: ${CONFIG_SERVER_CONTAINER_NAME}
+    build:
+      context: services/config-server
+      dockerfile: Dockerfile-ConfigServer
+      args:
+        - JAR_FILE=target/config-server-0.0.1-SNAPSHOT.jar
+    #image: config-server:latest        # if not commented, and if the image:tag exists, image will be used instead of building new image (peloton-pace_config-server:latest)
+    #expose:            # I think this is redundant and it's still reachable via 20001 from other containers. is it because of the docker network? --> YES
+    #  - 20001
+    ports:
+      - 20001:20001     # for DEV purpose
+    networks:
+      - peloton-pace-backend
+    #volumes:
+    #  - config-repo:/var/lib/config-repo
+    environment:
+      - CONFIG_SERVER_USER_HOME=${CONFIG_SERVER_USER_HOME}
+
+  eureka-server:
+    container_name: ${EUREKA_SERVER_CONTAINER_NAME}
+    build:
+      context: services/eureka-server
+      dockerfile: Dockerfile-EurekaServer
+      args:
+        - JAR_FILE=target/eureka-server-0.0.1-SNAPSHOT.jar
+    ports:
+      - 20002:20002     # for DEV purpose
+    networks:
+      - peloton-pace-backend
+    environment:
+      - CONFIG_SERVER_CONTAINER_NAME=${CONFIG_SERVER_CONTAINER_NAME}
+      - EUREKA_SERVER_CONTAINER_NAME=${EUREKA_SERVER_CONTAINER_NAME}
+    depends_on:
+      - config-server
+
+  api-gateway-zuul-server:
+    #container_name: api-gateway-zuul-server-container   # *** you cannot scale a service beyond 1 container if you have specified a custom name. Attempting to do so results in an error.
+    build:
+      context: services/api-gateway-zuul
+      dockerfile: Dockerfile-ApiGatewayZuul
+      args:
+        - JAR_FILE=target/api-gateway-zuul-0.0.1-SNAPSHOT.jar
+    #ports:
+    #  - 20000:20000     # for DEV purpose
+    networks:
+      - peloton-pace-backend
+    environment:
+      - API_VERSION=${SERVICE_API_VERSION}
+      - CONFIG_SERVER_CONTAINER_NAME=${CONFIG_SERVER_CONTAINER_NAME}
+      - EUREKA_SERVER_CONTAINER_NAME=${EUREKA_SERVER_CONTAINER_NAME}
+    depends_on:
+      - config-server
+      - eureka-server
+
+  user-service:
+    #container_name: user-service-container
+    build:
+      context: services/user-service
+      dockerfile: Dockerfile-UserService
+      args:
+        - JAR_FILE=target/user-service-0.0.1-SNAPSHOT.jar
+    #ports:
+    #  - 20003:20003     # for DEV purpose
+    networks:
+      - peloton-pace-backend
+    environment:
+      - CONFIG_SERVER_CONTAINER_NAME=${CONFIG_SERVER_CONTAINER_NAME}
+      - EUREKA_SERVER_CONTAINER_NAME=${EUREKA_SERVER_CONTAINER_NAME}
+      - POSTGRES_DB_JDBC_URL=${POSTGRES_DB_JDBC_URL}
+      - POSTGRES_DB_USERNAME=${POSTGRES_DB_USERNAME}
+      - POSTGRES_DB_PASSWORD=${POSTGRES_DB_PASSWORD}
+    entrypoint: /docker-entrypoint-user-service.sh
+    depends_on:
+      - config-server
+      - eureka-server
+      - postgres
+
   peloton-pace-service:
     # -- if you want to scale, each instance must have a unique container name so cannot specify a container name
     # -- if container name is not specified, the container name pattern will be [project_name]_[service_name]_[count#]
@@ -33,24 +128,26 @@ services:
       dockerfile: Dockerfile-peloton-pace-service
       args:
         - JAR_FILE=target/peloton-pace-service-0.0.1-SNAPSHOT.jar
-    ports:              # for DEV purpose only. ensure that only one instance of this service is running, because multiple instances cannot be mapped to a single local port
-      - 19090:9090
-    # expose:   # even if it's not exposed, it's still reachable via 9090. is it because of the network?
-      # - 9090
+    #ports:              # for DEV purpose only. ensure that only one instance of this service is running, because multiple instances cannot be mapped to a single local port
+    #  - 20004:20004
     networks:
-      - peloton-pace-frontend
+#      - peloton-pace-frontend
       - peloton-pace-backend
     environment:
-      - SERVER_PORT=${SERVICE_SERVER_PORT}
-      - API_VERSION=${SERVICE_API_VERSION}
+      # - API_VERSION=${SERVICE_API_VERSION}
+      - CONFIG_SERVER_CONTAINER_NAME=${CONFIG_SERVER_CONTAINER_NAME}
+      - EUREKA_SERVER_CONTAINER_NAME=${EUREKA_SERVER_CONTAINER_NAME}
       - POSTGRES_DB_JDBC_URL=${POSTGRES_DB_JDBC_URL}
       - POSTGRES_DB_USERNAME=${POSTGRES_DB_USERNAME}
       - POSTGRES_DB_PASSWORD=${POSTGRES_DB_PASSWORD}
+    entrypoint: /docker-entrypoint-peloton-pace-service.sh
     depends_on:
+      - config-server
+      - eureka-server
       - postgres
 
   postgres:
-    container_name: peloton-pace-postgres
+    container_name: ${POSTGRES_DB_CONTAINER_NAME}
     image: postgres:11   # postgres:11-alpine
     # restart: always      # restart whenever changes are made in docker-compose.yml. 'no' is default
     ports:
@@ -65,21 +162,6 @@ services:
     #   - '~/my-projects/microservices-projects/peloton-pace/pgdata:/var/lib/postgresql/data'
     networks:
       - peloton-pace-backend
-
-  nginx:
-    container_name: peloton-pace-nginx
-    image: nginx:alpine
-    ports:                # FE requests should go to NGINX. e.g) localhost:3001, which will then be re-routed. this is REVERSE-PROXY
-      - ${NGINX_PORT}:80
-    volumes:
-      - './public:/srv/www/static'
-      - './devops/config/nginx/nginx.conf:/etc/nginx/nginx.conf'             # where http configs are done, including load balancing
-      - './devops/config/nginx/default.conf:/etc/nginx/conf.d/default.conf'  # where reverse proxy configs are done
-    networks:
-      - peloton-pace-frontend
-    depends_on:
-      - peloton-pace-ui
-      - peloton-pace-service
 
 networks:
   peloton-pace-frontend:

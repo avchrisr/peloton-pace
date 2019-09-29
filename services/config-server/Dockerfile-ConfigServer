@@ -1,0 +1,11 @@
+#FROM openjdk:8-jdk-alpine
+#FROM openjdk:11-jdk
+FROM adoptopenjdk/openjdk11:latest
+VOLUME /tmp
+ARG JAR_FILE
+COPY ${JAR_FILE} config-server.jar
+RUN mkdir /var/lib/config-repo
+COPY config-repo /var/lib/config-repo
+#VOLUME /var/lib/config-repo     # not needed
+EXPOSE 20001
+ENTRYPOINT ["java", "-jar", "/config-server.jar"]

@@ -1,0 +1,8 @@
+#FROM openjdk:8-jdk-alpine
+#FROM openjdk:11-jdk
+FROM adoptopenjdk/openjdk11:latest
+VOLUME /tmp
+ARG JAR_FILE
+COPY ${JAR_FILE} eureka-server.jar
+EXPOSE 20002
+ENTRYPOINT ["java", "-jar", "/eureka-server.jar"]
