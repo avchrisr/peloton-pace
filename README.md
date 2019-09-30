@@ -1,28 +1,28 @@
 # peloton-pace
 
-PelotonPace app is a Peloton Fitness Exercise Health Metrics Tracker and Visualizer
+PelotonPace is a Peloton Fitness Exercise Health Metrics Tracker and Visualizer app
 
 ## screenshots
 
-#### main page upon successful login
+### main page upon successful login
 
 [![Peloton-Pace-01-main-page.png](https://i.postimg.cc/0NfhXpGr/Peloton-Pace-01-main-page.png)](https://postimg.cc/bGZ6sSBj)
 
 -----
 
-#### user profile page
+### user profile page
 
 [![Peloton-Pace-02-User-Profile-Page.png](https://i.postimg.cc/vB5xdZB1/Peloton-Pace-02-User-Profile-Page.png)](https://postimg.cc/R6VZ79w9)
 
 -----
 
-#### workouts history page
+### workouts history page
 
 [![Peloton-Pace-03-Workout-List-Page.png](https://i.postimg.cc/CLcB0tF4/Peloton-Pace-03-Workout-List-Page.png)](https://postimg.cc/WhJb65qD)
 
 -----
 
-#### workout details page with metrics
+### workout details page with metrics
 
 [![Peloton-Pace-04-Workout-Details-Page.png](https://i.postimg.cc/90JMWRjf/Peloton-Pace-04-Workout-Details-Page.png)](https://postimg.cc/V001gNvy)
 
@@ -76,8 +76,7 @@ PelotonPace is designed in Microservices architecture, and consists of following
 
 ## Architecture diagram
 
-coming soon...
-
+[![Peloton-Pace-Architecture-Diagram.png](https://i.postimg.cc/NGKDnWRR/Peloton-Pace-Architecture-Diagram.png)](https://postimg.cc/JtWjDY6h)
 
 ## usage
 
