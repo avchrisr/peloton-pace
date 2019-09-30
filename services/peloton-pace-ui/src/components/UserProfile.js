@@ -8,6 +8,8 @@ import {
 import _ from 'lodash';
 import axios from 'axios';
 
+import useLocalStorageState from './../hooks/useLocalStorageState';
+
 const isOnlyNumbersRegEx = /^\d+$/;
 
 const REACT_APP_NGINX_HOSTNAME = process.env.REACT_APP_NGINX_HOSTNAME || 'localhost';
@@ -76,9 +78,8 @@ const UserProfile = (props) => {
 
     const isAuthenticated = window.localStorage.getItem('isAuthenticated');
     const userId = window.localStorage.getItem('userId');
-    const userFirstname = window.localStorage.getItem('userFirstname');
     const jwt = window.localStorage.getItem('jwt');
-
+    const [userFirstname, setUserFirstname] = useLocalStorageState('userFirstname', window.localStorage.getItem('userFirstname'));
 
     console.log(`UserProfile isAuthenticated = ${isAuthenticated}`);
     console.log(`UserProfile userId = ${userId}`);
@@ -131,10 +132,6 @@ const UserProfile = (props) => {
             console.log(err.response);
 
             const errorMessage = _.get(err, 'response.data.message') || _.get(err, 'message');
-
-            console.log('--------   User Profile Error Message   ----------');
-            console.log(errorMessage);
-
             setData({
                 ...data,
                 errorMessages: [errorMessage]
@@ -142,16 +139,11 @@ const UserProfile = (props) => {
         });
 
         if (res) {
-            console.log(`-------------  res.data  ---------------`);
-            console.log(JSON.stringify(res.data, null, 4));
-
-
             res.data.password = '*******';
             if (_.isNil(res.data.dob)) {
                 res.data.dob = '';
             }
             res.data.pelotonPassword = '*******';
-
 
             initialState.email = res.data.email;
             initialState.password = res.data.password;
@@ -160,10 +152,6 @@ const UserProfile = (props) => {
             initialState.dob = res.data.dob;
             initialState.pelotonUsername = res.data.pelotonUsername;
             initialState.pelotonPassword = res.data.pelotonPassword;
-
-
-            console.log('------   new  initialState   --------');
-            console.log(initialState);
 
             setInitialStateData({
                 ...initialState
@@ -245,9 +233,6 @@ const UserProfile = (props) => {
         // }
 
         if (errorMessages.length > 0) {
-            console.log('--------   UserProfile Submit Error Messages   ----------');
-            console.log(errorMessages);
-
             setData({
                 ...data,
                 errorMessages
@@ -313,10 +298,6 @@ const UserProfile = (props) => {
             console.log(err.response);
 
             const errorMessage = _.get(err, 'response.data.message') || _.get(err, 'message');
-
-            console.log('--------   User Profile In Error Message 333   ----------');
-            console.log(errorMessage);
-
             setData({
                 ...data,
                 errorMessages: [errorMessage],
@@ -328,6 +309,11 @@ const UserProfile = (props) => {
             console.log(`-------------  res.data  ---------------`);
             console.log(JSON.stringify(res.data, null, 4));
 
+            // if user firstname is changed, update it in localStorage so it would be reflected in navbar
+            if (_.has(requestBody, 'firstname')) {
+                setUserFirstname(requestBody.firstname);
+            }
+
             setData({
                 ...data,
                 responseMessage: res.data.message,
@@ -338,10 +324,6 @@ const UserProfile = (props) => {
     };
 
     const handleReset = () => {
-
-        console.log('------   handleReset  initialStateData   --------');
-        console.log(initialStateData);
-
         setData({
             ...initialStateData
         });

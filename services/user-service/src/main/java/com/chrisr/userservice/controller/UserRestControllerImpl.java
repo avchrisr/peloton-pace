@@ -107,5 +107,6 @@ public class UserRestControllerImpl implements UserRestController {
 
     private void removeSensitiveInfoFromUser(User user) {
         user.setPassword(null);
+        user.setPelotonPassword(null);
     }
 }

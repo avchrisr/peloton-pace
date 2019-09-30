@@ -27,7 +27,7 @@ public class ApiGatewayZuulApplication {
 		ConfigurationManager.getConfigInstance().setProperty("hystrix.command.default.circuitBreaker.enabled", false);
 		ConfigurationManager.getConfigInstance().setProperty("hystrix.command.default.execution.timeout.enabled", false);
 		ConfigurationManager.getConfigInstance().setProperty("hystrix.command.default.execution.isolation.thread.interruptOnTimeout", false);
-		ConfigurationManager.getConfigInstance().setProperty("hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds", 120000);
+		ConfigurationManager.getConfigInstance().setProperty("hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds", 300000);
 		ConfigurationManager.getConfigInstance().setProperty("ribbon.ReadTimeout", 60000);
 		ConfigurationManager.getConfigInstance().setProperty("ribbon.ConnectTimeout", 60000);
 	}

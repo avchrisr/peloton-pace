@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import _ from 'lodash';
 
 const UseLocalStorageState = (key, defaultVal) => {
 
@@ -17,7 +18,12 @@ const UseLocalStorageState = (key, defaultVal) => {
 
         console.log(`--------  UseLocalStorageState | key = ${key} | state = ${state}`);
 
-        window.localStorage.setItem(key, JSON.stringify(state));
+        if (_.isObjectLike(state)) {
+            window.localStorage.setItem(key, JSON.stringify(state));
+        } else {
+            window.localStorage.setItem(key, String(state));
+        }
+
     }, [state]);
 
     return [state, setState];
