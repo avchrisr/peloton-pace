@@ -50,7 +50,7 @@ PelotonPace is designed in Microservices architecture, and consists of following
 - Frontend UI written in React
 
 **nginx**
-- single point of entry into Backend, which load balances web traffic to "**api-gateway-zuul-server**"
+- acting as a reverse proxy, it's the single point of entry into Backend, which load balances web traffic to "**api-gateway-zuul-server**"
 - update "**nginx-conf**" if you wish to change the initial setting of 3 api-gateway-zuul-server instances
 
 **config-server**
