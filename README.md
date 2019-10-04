@@ -6,25 +6,25 @@ PelotonPace is a Peloton Fitness Exercise Health Metrics Tracker and Visualizer 
 
 ### main page upon successful login
 
-[![Peloton-Pace-01-main-page.png](https://i.postimg.cc/0NfhXpGr/Peloton-Pace-01-main-page.png)]
+![Peloton-Pace-01-main-page.png](https://i.postimg.cc/0NfhXpGr/Peloton-Pace-01-main-page.png)
 
 -----
 
 ### user profile page
 
-[![Peloton-Pace-02-User-Profile-Page.png](https://i.postimg.cc/vB5xdZB1/Peloton-Pace-02-User-Profile-Page.png)]
+![Peloton-Pace-02-User-Profile-Page.png](https://i.postimg.cc/vB5xdZB1/Peloton-Pace-02-User-Profile-Page.png)
 
 -----
 
 ### workouts history page
 
-[![Peloton-Pace-03-Workout-List-Page.png](https://i.postimg.cc/CLcB0tF4/Peloton-Pace-03-Workout-List-Page.png)]
+![Peloton-Pace-03-Workout-List-Page.png](https://i.postimg.cc/CLcB0tF4/Peloton-Pace-03-Workout-List-Page.png)
 
 -----
 
 ### workout details page with metrics
 
-[![Peloton-Pace-04-Workout-Details-Page.png](https://i.postimg.cc/90JMWRjf/Peloton-Pace-04-Workout-Details-Page.png)]
+![Peloton-Pace-04-Workout-Details-Page.png](https://i.postimg.cc/90JMWRjf/Peloton-Pace-04-Workout-Details-Page.png)
 
 -----
 
@@ -76,7 +76,7 @@ PelotonPace is designed in Microservices architecture, and consists of following
 
 ## Architecture diagram
 
-[![Peloton-Pace-Architecture-Diagram.png](https://i.postimg.cc/NGKDnWRR/Peloton-Pace-Architecture-Diagram.png)]
+![Peloton-Pace-Architecture-Diagram.png](https://i.postimg.cc/NGKDnWRR/Peloton-Pace-Architecture-Diagram.png)
 
 ## usage
 
