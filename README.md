@@ -6,25 +6,25 @@ PelotonPace is a Peloton Fitness Exercise Health Metrics Tracker and Visualizer 
 
 ### main page upon successful login
 
-[![Peloton-Pace-01-main-page.png](https://i.postimg.cc/0NfhXpGr/Peloton-Pace-01-main-page.png)](https://postimg.cc/bGZ6sSBj)
+[![Peloton-Pace-01-main-page.png](https://i.postimg.cc/0NfhXpGr/Peloton-Pace-01-main-page.png)]
 
 -----
 
 ### user profile page
 
-[![Peloton-Pace-02-User-Profile-Page.png](https://i.postimg.cc/vB5xdZB1/Peloton-Pace-02-User-Profile-Page.png)](https://postimg.cc/R6VZ79w9)
+[![Peloton-Pace-02-User-Profile-Page.png](https://i.postimg.cc/vB5xdZB1/Peloton-Pace-02-User-Profile-Page.png)]
 
 -----
 
 ### workouts history page
 
-[![Peloton-Pace-03-Workout-List-Page.png](https://i.postimg.cc/CLcB0tF4/Peloton-Pace-03-Workout-List-Page.png)](https://postimg.cc/WhJb65qD)
+[![Peloton-Pace-03-Workout-List-Page.png](https://i.postimg.cc/CLcB0tF4/Peloton-Pace-03-Workout-List-Page.png)]
 
 -----
 
 ### workout details page with metrics
 
-[![Peloton-Pace-04-Workout-Details-Page.png](https://i.postimg.cc/90JMWRjf/Peloton-Pace-04-Workout-Details-Page.png)](https://postimg.cc/V001gNvy)
+[![Peloton-Pace-04-Workout-Details-Page.png](https://i.postimg.cc/90JMWRjf/Peloton-Pace-04-Workout-Details-Page.png)]
 
 -----
 
@@ -76,7 +76,7 @@ PelotonPace is designed in Microservices architecture, and consists of following
 
 ## Architecture diagram
 
-[![Peloton-Pace-Architecture-Diagram.png](https://i.postimg.cc/NGKDnWRR/Peloton-Pace-Architecture-Diagram.png)](https://postimg.cc/JtWjDY6h)
+[![Peloton-Pace-Architecture-Diagram.png](https://i.postimg.cc/NGKDnWRR/Peloton-Pace-Architecture-Diagram.png)]
 
 ## usage
 
@@ -122,7 +122,7 @@ PelotonPace is designed in Microservices architecture, and consists of following
 
 
 ### get peloton workout history
-`http://localhost:19999/api/v1/peloton/get-workout-summary`
+`http://localhost:19999/api/v1/peloton-dashboard/peloton-pace-service/peloton/get-workout-summary`
 
 * valid Peloton credential required in user profile prior to accessing Peloton API
 
